@@ -8,7 +8,9 @@ interface UserState {
   joinedAt: string;
   logs: Record<string, UserLogEntry>;
   lists: GameList[];
+  recentlyViewed: string[];
   setDisplayName: (name: string) => void;
+  addRecentlyViewed: (gameId: string) => void;
   setStatus: (gameId: string, status: LogStatus | undefined) => void;
   setRating: (gameId: string, rating: number | undefined) => void;
   setReview: (gameId: string, review: string) => void;
@@ -37,8 +39,17 @@ export const useUserStore = create<UserState>()(
       joinedAt: new Date().toISOString(),
       logs: {},
       lists: [],
+      recentlyViewed: [],
 
       setDisplayName: (name) => set({ displayName: name }),
+
+      addRecentlyViewed: (gameId) =>
+        set((state) => ({
+          recentlyViewed: [gameId, ...state.recentlyViewed.filter((id) => id !== gameId)].slice(
+            0,
+            12,
+          ),
+        })),
 
       setStatus: (gameId, status) =>
         set((state) => {

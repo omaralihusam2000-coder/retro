@@ -3,9 +3,10 @@ import { Link, useParams } from "react-router-dom";
 import { ExternalLink, Star } from "lucide-react";
 import { getGameBySlug } from "../lib/gamesData";
 import { getDeals } from "../lib/dealsApi";
-import type { LiveDeal, StoreKey } from "../lib/types";
+import type { LiveDeal, LogStatus, StoreKey } from "../lib/types";
 import { formatCompactNumber, formatPrice } from "../lib/format";
 import { useUserStore } from "../lib/store";
+import { useToastStore } from "../lib/toastStore";
 import { reviewsForGame } from "../data/reviewsMock";
 import PosterImage from "../components/PosterImage";
 import StarRating from "../components/StarRating";
@@ -17,6 +18,14 @@ import { timeAgo } from "../lib/format";
 
 const STORE_ORDER: StoreKey[] = ["steam", "epic", "gog"];
 
+const STATUS_LABEL: Record<LogStatus, string> = {
+  backlog: "Backlog",
+  playing: "Playing",
+  completed: "Completed",
+  wishlist: "Wishlist",
+  abandoned: "Abandoned",
+};
+
 export default function GameDetail() {
   const { slug } = useParams();
   const game = slug ? getGameBySlug(slug) : undefined;
@@ -26,8 +35,13 @@ export default function GameDetail() {
   const setRating = useUserStore((s) => s.setRating);
   const setStatus = useUserStore((s) => s.setStatus);
   const setReview = useUserStore((s) => s.setReview);
+  const addRecentlyViewed = useUserStore((s) => s.addRecentlyViewed);
   const [reviewDraft, setReviewDraft] = useState(entry?.review ?? "");
-  const [saved, setSaved] = useState(false);
+  const pushToast = useToastStore((s) => s.push);
+
+  useEffect(() => {
+    if (game) addRecentlyViewed(game.id);
+  }, [game, addRecentlyViewed]);
 
   useEffect(() => {
     setReviewDraft(entry?.review ?? "");
@@ -67,8 +81,7 @@ export default function GameDetail() {
 
   function handleSaveReview() {
     setReview(game!.id, reviewDraft);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1800);
+    pushToast("Review saved");
   }
 
   return (
@@ -90,12 +103,13 @@ export default function GameDetail() {
             </p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {game.genres.map((g) => (
-                <span
+                <Link
                   key={g}
-                  className="rounded-full bg-ink-800 px-2.5 py-1 text-xs font-medium text-ink-300"
+                  to={`/genres/${encodeURIComponent(g)}`}
+                  className="rounded-full bg-ink-800 px-2.5 py-1 text-xs font-medium text-ink-300 transition hover:bg-ink-700 hover:text-neon-400"
                 >
                   {g}
-                </span>
+                </Link>
               ))}
             </div>
             <div className="mt-4 flex items-center gap-2 text-sm text-ink-300">
@@ -119,7 +133,10 @@ export default function GameDetail() {
                   </p>
                   <StarRating
                     value={entry?.rating ?? 0}
-                    onChange={(v) => setRating(game.id, v || undefined)}
+                    onChange={(v) => {
+                      setRating(game.id, v || undefined);
+                      pushToast(v ? `Rated ${v.toFixed(1)} stars` : "Rating cleared");
+                    }}
                     size={24}
                     showValue
                   />
@@ -130,7 +147,13 @@ export default function GameDetail() {
                 <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-400">
                   Status
                 </p>
-                <StatusPicker value={entry?.status} onChange={(s) => setStatus(game.id, s)} />
+                <StatusPicker
+                  value={entry?.status}
+                  onChange={(s) => {
+                    setStatus(game.id, s);
+                    pushToast(s ? `Marked as ${STATUS_LABEL[s]}` : "Status cleared");
+                  }}
+                />
               </div>
               <div className="mt-5">
                 <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-400">
@@ -150,7 +173,6 @@ export default function GameDetail() {
                   >
                     Save review
                   </button>
-                  {saved && <span className="text-xs font-medium text-neon-400">Saved ✓</span>}
                 </div>
               </div>
             </div>

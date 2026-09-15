@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useUserStore } from "../lib/store";
+import { useToastStore } from "../lib/toastStore";
 import { getGameById } from "../lib/gamesData";
 import PosterImage from "../components/PosterImage";
 
 export default function Lists() {
   const lists = useUserStore((s) => s.lists);
   const createList = useUserStore((s) => s.createList);
+  const pushToast = useToastStore((s) => s.push);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [open, setOpen] = useState(false);
@@ -15,6 +17,7 @@ export default function Lists() {
   function handleCreate() {
     if (!name.trim()) return;
     createList(name.trim(), description.trim());
+    pushToast(`Created "${name.trim()}"`);
     setName("");
     setDescription("");
     setOpen(false);

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { useUserStore } from "../lib/store";
+import { useToastStore } from "../lib/toastStore";
 import { games } from "../lib/gamesData";
 import GameCard from "../components/GameCard";
 
@@ -12,6 +13,7 @@ export default function ListDetail() {
   const deleteList = useUserStore((s) => s.deleteList);
   const addToList = useUserStore((s) => s.addToList);
   const removeFromList = useUserStore((s) => s.removeFromList);
+  const pushToast = useToastStore((s) => s.push);
   const [adding, setAdding] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -52,6 +54,7 @@ export default function ListDetail() {
           <button
             onClick={() => {
               deleteList(list.id);
+              pushToast(`Deleted "${list.name}"`);
               navigate("/lists");
             }}
             className="inline-flex items-center gap-1.5 rounded-full border border-ink-600 px-4 py-2 text-sm font-semibold text-ink-300 hover:border-red-500/50 hover:text-red-400"

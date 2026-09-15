@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, ListPlus, Plus } from "lucide-react";
 import { useUserStore } from "../lib/store";
+import { useToastStore } from "../lib/toastStore";
 
 export default function AddToListMenu({ gameId }: { gameId: string }) {
   const [open, setOpen] = useState(false);
@@ -10,12 +11,14 @@ export default function AddToListMenu({ gameId }: { gameId: string }) {
   const addToList = useUserStore((s) => s.addToList);
   const removeFromList = useUserStore((s) => s.removeFromList);
   const createList = useUserStore((s) => s.createList);
+  const pushToast = useToastStore((s) => s.push);
 
   function handleCreate() {
     const trimmed = name.trim();
     if (!trimmed) return;
     const id = createList(trimmed, "");
     addToList(id, gameId);
+    pushToast(`Created "${trimmed}" and added game`);
     setName("");
     setCreating(false);
   }
@@ -42,9 +45,15 @@ export default function AddToListMenu({ gameId }: { gameId: string }) {
                 return (
                   <button
                     key={list.id}
-                    onClick={() =>
-                      included ? removeFromList(list.id, gameId) : addToList(list.id, gameId)
-                    }
+                    onClick={() => {
+                      if (included) {
+                        removeFromList(list.id, gameId);
+                        pushToast(`Removed from "${list.name}"`);
+                      } else {
+                        addToList(list.id, gameId);
+                        pushToast(`Added to "${list.name}"`);
+                      }
+                    }}
                     className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-sm text-ink-200 hover:bg-ink-700"
                   >
                     <span className="truncate">{list.name}</span>

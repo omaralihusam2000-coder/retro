@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Sparkles, Tag, Users } from "lucide-react";
-import { games } from "../lib/gamesData";
+import { games, getGameById } from "../lib/gamesData";
 import { activityFeed } from "../data/activityMock";
 import { getDeals } from "../lib/dealsApi";
 import type { LiveDeal } from "../lib/types";
+import { useUserStore } from "../lib/store";
+import { computeStats } from "../lib/stats";
 import GameCard from "../components/GameCard";
 import DealCard from "../components/DealCard";
 import ActivityItem from "../components/ActivityItem";
 import SectionHeader from "../components/SectionHeader";
 import PosterImage from "../components/PosterImage";
-import Loader from "../components/Loader";
+import { DealGridSkeleton } from "../components/Skeleton";
 
 const HERO_GAMES = [games[3], games[2], games[4], games[6]];
 
@@ -65,6 +67,20 @@ export default function Home() {
 
   const trending = [...games].sort((a, b) => b.communityRating - a.communityRating).slice(0, 12);
 
+  const logs = useUserStore((s) => s.logs);
+  const recentlyViewedIds = useUserStore((s) => s.recentlyViewed);
+  const recentlyViewed = recentlyViewedIds
+    .map((id) => getGameById(id))
+    .filter((g): g is (typeof games)[number] => !!g);
+
+  const stats = computeStats(logs);
+  const recommended = stats.favoriteGenre
+    ? games
+        .filter((g) => g.genres.includes(stats.favoriteGenre!) && !logs[g.id])
+        .sort((a, b) => b.communityRating - a.communityRating)
+        .slice(0, 12)
+    : [];
+
   return (
     <div>
       <section className="scanlines relative flex min-h-[560px] items-center overflow-hidden border-b border-ink-800">
@@ -116,6 +132,36 @@ export default function Home() {
         </div>
       </div>
 
+      {recentlyViewed.length > 0 && (
+        <div className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+          <SectionHeader eyebrow="Pick up where you left off" title="Recently viewed" />
+          <div className="scrollbar-thin -mx-1 flex gap-4 overflow-x-auto px-1 pb-2">
+            {recentlyViewed.map((game) => (
+              <div key={game.id} className="w-36 shrink-0 sm:w-44">
+                <GameCard game={game} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {recommended.length > 0 && (
+        <div className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+          <SectionHeader
+            eyebrow="Because you rate a lot of it"
+            title={`More ${stats.favoriteGenre}`}
+            action="/games"
+          />
+          <div className="scrollbar-thin -mx-1 flex gap-4 overflow-x-auto px-1 pb-2">
+            {recommended.map((game) => (
+              <div key={game.id} className="w-36 shrink-0 sm:w-44">
+                <GameCard game={game} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="border-y border-ink-800 bg-ink-900/40 py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeader
@@ -140,7 +186,10 @@ export default function Home() {
             actionLabel="View all deals"
           />
           {deals === null ? (
-            <Loader label="Scanning storefronts" />
+            <DealGridSkeleton
+              count={6}
+              className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6"
+            />
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
               {deals.map((deal) => (

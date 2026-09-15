@@ -3,7 +3,7 @@ import { RefreshCw, Search } from "lucide-react";
 import { getDeals } from "../lib/dealsApi";
 import type { LiveDeal, StoreKey } from "../lib/types";
 import DealCard from "../components/DealCard";
-import Loader from "../components/Loader";
+import { DealGridSkeleton } from "../components/Skeleton";
 
 type StoreFilter = "all" | StoreKey;
 type SortKey = "savings" | "price-asc" | "price-desc" | "title";
@@ -21,6 +21,7 @@ export default function Deals() {
   const [store, setStore] = useState<StoreFilter>("all");
   const [sort, setSort] = useState<SortKey>("savings");
   const [query, setQuery] = useState("");
+  const [maxPrice, setMaxPrice] = useState<number | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function Deals() {
     if (!deals) return [];
     let list = deals;
     if (store !== "all") list = list.filter((d) => d.storeKey === store);
+    if (maxPrice !== null) list = list.filter((d) => d.salePrice <= maxPrice);
     if (query.trim()) {
       const q = query.trim().toLowerCase();
       list = list.filter((d) => d.gameTitle.toLowerCase().includes(q));
@@ -60,7 +62,7 @@ export default function Deals() {
         break;
     }
     return sorted;
-  }, [deals, store, query, sort]);
+  }, [deals, store, query, sort, maxPrice]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -121,6 +123,17 @@ export default function Deals() {
             />
           </div>
           <select
+            value={maxPrice ?? "any"}
+            onChange={(e) => setMaxPrice(e.target.value === "any" ? null : Number(e.target.value))}
+            className="rounded-full border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-ink-100 outline-none focus:border-neon-500/50"
+          >
+            <option value="any">Any price</option>
+            <option value="5">Under $5</option>
+            <option value="10">Under $10</option>
+            <option value="20">Under $20</option>
+            <option value="30">Under $30</option>
+          </select>
+          <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
             className="rounded-full border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-ink-100 outline-none focus:border-neon-500/50"
@@ -134,7 +147,7 @@ export default function Deals() {
       </div>
 
       {deals === null ? (
-        <Loader label="Scanning Steam, Epic and GOG" />
+        <DealGridSkeleton count={15} />
       ) : filtered.length === 0 ? (
         <p className="py-16 text-center text-ink-400">No deals match those filters right now.</p>
       ) : (

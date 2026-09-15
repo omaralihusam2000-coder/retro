@@ -31,6 +31,17 @@ const basePrices: BasePrice[] = [
   { gameId: "sekiro", price: 59.99, discount: { steam: 50 } },
   { gameId: "darksouls3", price: 39.99, discount: { steam: 75 } },
   { gameId: "outerwilds", price: 24.99, discount: { steam: 60, epic: 50 } },
+  { gameId: "cuphead", price: 19.99, discount: { steam: 50, gog: 40, epic: 50 } },
+  { gameId: "firewatch", price: 19.99, discount: { steam: 75, gog: 60, epic: 60 } },
+  { gameId: "hyperlightdrifter", price: 19.99, discount: { steam: 60, gog: 50, epic: 50 } },
+  { gameId: "katanazero", price: 14.99, discount: { steam: 40, gog: 30, epic: 40 } },
+  { gameId: "inscryption", price: 19.99, discount: { steam: 40, gog: 30, epic: 30 } },
+  { gameId: "inside", price: 19.99, discount: { steam: 75, gog: 60, epic: 60 } },
+  { gameId: "limbo", price: 9.99, discount: { steam: 75, gog: 60, epic: 60 } },
+  { gameId: "tunic", price: 29.99, discount: { steam: 30, gog: 25, epic: 25 } },
+  { gameId: "loophero", price: 14.99, discount: { steam: 50, gog: 40, epic: 40 } },
+  { gameId: "subnautica", price: 29.99, discount: { steam: 75, epic: 60 } },
+  { gameId: "riskofrain2", price: 24.99, discount: { steam: 60, epic: 50 } },
 ];
 
 const storeNames: Record<StoreKey, string> = {
