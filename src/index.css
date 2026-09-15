@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Chakra Petch", "Inter", sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-ink-950: #05060a;
+  --color-ink-900: #0b0d14;
+  --color-ink-800: #12141f;
+  --color-ink-700: #191c2a;
+  --color-ink-600: #232739;
+  --color-ink-500: #323750;
+  --color-ink-400: #565c7d;
+  --color-ink-300: #8286a3;
+  --color-ink-200: #b4b7cc;
+  --color-ink-100: #dfe0ea;
+
+  --color-neon-500: #33ff8e;
+  --color-neon-400: #6dffb0;
+  --color-neon-600: #16c96a;
+
+  --color-cyan-500: #00d8ff;
+  --color-cyan-600: #00a8cc;
+
+  --color-magenta-500: #ff3ea5;
+  --color-magenta-600: #d4188a;
+
+  --color-amber-400: #ffc857;
+  --color-amber-500: #ffb020;
+
+  --shadow-glow-neon: 0 0 0 1px rgba(51, 255, 142, 0.25), 0 0 24px rgba(51, 255, 142, 0.25);
+  --shadow-glow-cyan: 0 0 0 1px rgba(0, 216, 255, 0.25), 0 0 24px rgba(0, 216, 255, 0.22);
+  --shadow-glow-magenta: 0 0 0 1px rgba(255, 62, 165, 0.25), 0 0 24px rgba(255, 62, 165, 0.22);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-ink-700);
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-ink-100);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(51, 255, 142, 0.07), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(0, 216, 255, 0.06), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(255, 62, 165, 0.05), transparent 45%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+  }
+
+  ::selection {
+    background: var(--color-neon-500);
+    color: var(--color-ink-950);
+  }
+}
+
+@layer utilities {
+  .scanlines {
+    position: relative;
+  }
+  .scanlines::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.035) 0px,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
+    opacity: 0.5;
+  }
+
+  .noise-grain {
+    position: relative;
+  }
+  .noise-grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .text-gradient-neon {
+    background-image: linear-gradient(90deg, var(--color-neon-400), var(--color-cyan-500));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .poster {
+    aspect-ratio: 2 / 3;
+  }
+
+  .backdrop-16-9 {
+    aspect-ratio: 16 / 9;
+  }
+
+  .card-glow-hover {
+    transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  }
+  .card-glow-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow-neon);
+    border-color: rgba(51, 255, 142, 0.4);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--color-ink-600);
+    border-radius: 999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ink-500);
+  }
+
+  .mask-fade-r {
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
