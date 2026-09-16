@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Deals from "./pages/Deals";
 import Browse from "./pages/Browse";
 import Genre from "./pages/Genre";
+import Upcoming from "./pages/Upcoming";
 import GameDetail from "./pages/GameDetail";
 import Profile from "./pages/Profile";
 import Lists from "./pages/Lists";
@@ -34,6 +35,7 @@ function App() {
           <Route path="/games" element={<Browse />} />
           <Route path="/games/:slug" element={<GameDetail />} />
           <Route path="/genres/:genre" element={<Genre />} />
+          <Route path="/upcoming" element={<Upcoming />} />
           <Route path="/deals" element={<Deals />} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/lists" element={<Lists />} />

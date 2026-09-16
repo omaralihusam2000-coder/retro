@@ -27,36 +27,36 @@ export default function Lists() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neon-500">Curated</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-500">Curated</p>
           <h1 className="font-display text-3xl font-bold text-white sm:text-4xl">Your lists</h1>
         </div>
         <button
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-full bg-neon-500 px-4 py-2 text-sm font-bold text-ink-950 transition hover:bg-neon-400"
+          className="inline-flex items-center gap-1.5 rounded-full bg-accent-500 px-4 py-2 text-sm font-bold text-ink-950 transition hover:bg-accent-400"
         >
           <Plus size={16} /> New list
         </button>
       </div>
 
       {open && (
-        <div className="mb-8 rounded-xl border border-ink-700 bg-ink-800 p-5">
+        <div className="mb-8 glass rounded-2xl p-5">
           <div className="grid gap-3 sm:grid-cols-2">
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="List name"
-              className="rounded-lg border border-ink-600 bg-ink-900 px-3 py-2 text-sm text-ink-100 outline-none focus:border-neon-500/50"
+              className="rounded-xl border border-ink-600 bg-ink-900 px-3 py-2 text-sm text-ink-100 outline-none focus:border-accent-500/50"
             />
             <input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Description (optional)"
-              className="rounded-lg border border-ink-600 bg-ink-900 px-3 py-2 text-sm text-ink-100 outline-none focus:border-neon-500/50"
+              className="rounded-xl border border-ink-600 bg-ink-900 px-3 py-2 text-sm text-ink-100 outline-none focus:border-accent-500/50"
             />
           </div>
           <button
             onClick={handleCreate}
-            className="mt-3 rounded-full bg-neon-500 px-4 py-1.5 text-sm font-bold text-ink-950 hover:bg-neon-400"
+            className="mt-3 rounded-full bg-accent-500 px-4 py-1.5 text-sm font-bold text-ink-950 hover:bg-accent-400"
           >
             Create
           </button>
@@ -64,7 +64,7 @@ export default function Lists() {
       )}
 
       {lists.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-ink-700 py-20 text-center">
+        <div className="rounded-2xl border border-dashed border-ink-700 py-20 text-center">
           <p className="text-ink-400">
             No lists yet. Start one for your comfort games, your backlog shame
             pile, or the games you're saving for a rainy weekend.
@@ -76,7 +76,7 @@ export default function Lists() {
             <Link
               key={list.id}
               to={`/lists/${list.id}`}
-              className="card-glow-hover overflow-hidden rounded-xl border border-ink-700 bg-ink-800"
+              className="card-glow-hover overflow-hidden rounded-2xl border border-ink-700 bg-ink-800"
             >
               <div className="grid h-28 grid-cols-4">
                 {list.gameIds.slice(0, 4).map((id) => {

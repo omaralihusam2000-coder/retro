@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Sparkles, Tag, Users } from "lucide-react";
+import { ArrowRight, Calendar, Sparkles, Tag, Users } from "lucide-react";
 import { games, getGameById } from "../lib/gamesData";
 import { activityFeed } from "../data/activityMock";
+import { upcomingGames } from "../data/upcomingGames";
 import { getDeals } from "../lib/dealsApi";
 import type { LiveDeal } from "../lib/types";
 import { useUserStore } from "../lib/store";
@@ -55,9 +56,9 @@ export default function Home() {
 
   useEffect(() => {
     let cancelled = false;
-    getDeals(12).then((res) => {
+    getDeals(24).then((res) => {
       if (cancelled) return;
-      setDeals(res.deals.slice(0, 6));
+      setDeals(res.deals.slice(0, 8));
       setDealSource(res.source);
     });
     return () => {
@@ -83,16 +84,16 @@ export default function Home() {
 
   return (
     <div>
-      <section className="scanlines relative flex min-h-[560px] items-center overflow-hidden border-b border-ink-800">
+      <section className="relative flex min-h-[560px] items-center overflow-hidden border-b border-ink-800">
         <HeroBackdrop />
         <div className="relative mx-auto w-full max-w-7xl px-4 py-24 sm:px-6">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-neon-500/30 bg-neon-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-neon-400">
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent-400">
             <Sparkles size={13} /> Your backlog, tracked properly
           </p>
           <h1 className="max-w-2xl font-display text-4xl font-bold leading-[1.05] text-white sm:text-6xl">
             Log every game.
             <br />
-            <span className="text-gradient-neon">Rate it. Hunt the deal.</span>
+            <span className="text-gradient-accent">Rate it. Hunt the deal.</span>
           </h1>
           <p className="mt-5 max-w-lg text-base text-ink-200 sm:text-lg">
             Retro is the social diary for gamers — rate what you play, build
@@ -102,13 +103,13 @@ export default function Home() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/games"
-              className="inline-flex items-center gap-2 rounded-full bg-neon-500 px-6 py-3 font-display text-sm font-bold text-ink-950 shadow-glow-neon transition hover:bg-neon-400"
+              className="inline-flex items-center gap-2 rounded-full bg-accent-500 px-6 py-3 font-display text-sm font-bold text-ink-950 shadow-glow-accent transition hover:bg-accent-400"
             >
               Browse Games <ArrowRight size={16} />
             </Link>
             <Link
               to="/deals"
-              className="inline-flex items-center gap-2 rounded-full border border-ink-500 bg-ink-900/60 px-6 py-3 font-display text-sm font-bold text-ink-100 backdrop-blur transition hover:border-neon-500/50"
+              className="glass inline-flex items-center gap-2 rounded-full px-6 py-3 font-display text-sm font-bold text-white transition hover:border-accent-500/50"
             >
               <Tag size={16} /> See Live Deals
             </Link>
@@ -162,6 +163,25 @@ export default function Home() {
         </div>
       )}
 
+      <div className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+        <SectionHeader eyebrow="Release radar" title="Coming soon" action="/upcoming" />
+        <div className="grid gap-3 sm:grid-cols-3">
+          {upcomingGames.slice(0, 3).map((game) => (
+            <Link
+              key={game.id}
+              to="/upcoming"
+              className="card-glow-hover glass rounded-2xl p-4"
+            >
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-accent-400">
+                <Calendar size={13} /> {game.expectedRelease}
+              </div>
+              <p className="mt-2 font-display font-semibold text-white">{game.title}</p>
+              <p className="mt-0.5 text-xs text-ink-400">{game.platforms.join(" · ")}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       <div className="border-y border-ink-800 bg-ink-900/40 py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeader
@@ -173,7 +193,7 @@ export default function Home() {
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                       dealSource === "live"
-                        ? "bg-neon-500/15 text-neon-400"
+                        ? "bg-accent-500/15 text-accent-400"
                         : "bg-amber-500/15 text-amber-400"
                     }`}
                   >
@@ -187,11 +207,11 @@ export default function Home() {
           />
           {deals === null ? (
             <DealGridSkeleton
-              count={6}
-              className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6"
+              count={8}
+              className="grid grid-cols-2 gap-4 sm:grid-cols-4"
             />
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {deals.map((deal) => (
                 <DealCard key={deal.id} deal={deal} />
               ))}
@@ -203,7 +223,7 @@ export default function Home() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_380px]">
         <div>
           <SectionHeader eyebrow="Community" title="Fresh off the feed" action="/activity" />
-          <div className="rounded-xl border border-ink-800 bg-ink-900/40 px-4">
+          <div className="glass rounded-2xl px-4">
             {activityFeed.slice(0, 6).map((entry) => (
               <ActivityItem key={entry.id} entry={entry} />
             ))}
@@ -251,8 +271,8 @@ function FeatureCard({
   body: string;
 }) {
   return (
-    <div className="rounded-xl border border-ink-800 bg-ink-900/40 p-5">
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-neon-500/10 text-neon-400">
+    <div className="glass rounded-2xl p-5">
+      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-accent-500/10 text-accent-400">
         <Icon size={18} />
       </div>
       <h3 className="mb-1.5 font-display font-semibold text-ink-100">{title}</h3>

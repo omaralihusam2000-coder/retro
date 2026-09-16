@@ -28,14 +28,14 @@ export default function AddToListMenu({ gameId }: { gameId: string }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-ink-600 px-4 py-2 text-sm font-semibold text-ink-200 transition hover:border-neon-500/50 hover:text-neon-400"
+        className="inline-flex items-center gap-1.5 rounded-full border border-ink-600 px-4 py-2 text-sm font-semibold text-ink-200 transition hover:border-accent-500/50 hover:text-accent-400"
       >
         <ListPlus size={15} /> Add to list
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 z-20 mt-2 w-64 rounded-xl border border-ink-700 bg-ink-800 p-2 shadow-xl">
+          <div className="absolute right-0 z-20 mt-2 w-64 glass rounded-2xl p-2 shadow-xl">
             <div className="max-h-52 overflow-y-auto">
               {lists.length === 0 && !creating && (
                 <p className="px-2 py-3 text-center text-xs text-ink-400">No lists yet.</p>
@@ -54,10 +54,10 @@ export default function AddToListMenu({ gameId }: { gameId: string }) {
                         pushToast(`Added to "${list.name}"`);
                       }
                     }}
-                    className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-sm text-ink-200 hover:bg-ink-700"
+                    className="flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-left text-sm text-ink-200 hover:bg-ink-700"
                   >
                     <span className="truncate">{list.name}</span>
-                    {included && <Check size={15} className="text-neon-400" />}
+                    {included && <Check size={15} className="text-accent-400" />}
                   </button>
                 );
               })}
@@ -71,11 +71,11 @@ export default function AddToListMenu({ gameId }: { gameId: string }) {
                     onChange={(e) => setName(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                     placeholder="New list name"
-                    className="w-full rounded-lg border border-ink-600 bg-ink-900 px-2 py-1.5 text-sm text-ink-100 outline-none focus:border-neon-500/50"
+                    className="w-full rounded-xl border border-ink-600 bg-ink-900 px-2 py-1.5 text-sm text-ink-100 outline-none focus:border-accent-500/50"
                   />
                   <button
                     onClick={handleCreate}
-                    className="shrink-0 rounded-lg bg-neon-500 px-2.5 text-sm font-bold text-ink-950"
+                    className="shrink-0 rounded-xl bg-accent-500 px-2.5 text-sm font-bold text-ink-950"
                   >
                     Add
                   </button>
@@ -83,7 +83,7 @@ export default function AddToListMenu({ gameId }: { gameId: string }) {
               ) : (
                 <button
                   onClick={() => setCreating(true)}
-                  className="flex w-full items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-semibold text-neon-400 hover:bg-ink-700"
+                  className="flex w-full items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm font-semibold text-accent-400 hover:bg-ink-700"
                 >
                   <Plus size={15} /> New list
                 </button>

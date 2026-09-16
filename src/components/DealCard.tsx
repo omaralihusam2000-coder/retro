@@ -19,7 +19,7 @@ export default function DealCard({ deal }: { deal: LiveDeal }) {
     undefined;
 
   return (
-    <div className="card-glow-hover group flex flex-col overflow-hidden rounded-xl border border-ink-700 bg-ink-800">
+    <div className="card-glow-hover group flex flex-col overflow-hidden rounded-2xl border border-ink-700 bg-ink-800">
       <div className="relative aspect-video overflow-hidden bg-ink-900">
         <PosterImage
           src={deal.thumb ?? ""}
@@ -30,7 +30,7 @@ export default function DealCard({ deal }: { deal: LiveDeal }) {
           <StoreBadge store={deal.storeKey} size="sm" />
         </div>
         {deal.savingsPct > 0 && (
-          <div className="absolute right-2 top-2 rounded-full bg-neon-500 px-2 py-0.5 text-xs font-bold text-ink-950">
+          <div className="absolute right-2 top-2 rounded-full bg-accent-500 px-2 py-0.5 text-xs font-bold text-ink-950">
             -{deal.savingsPct}%
           </div>
         )}
@@ -45,7 +45,7 @@ export default function DealCard({ deal }: { deal: LiveDeal }) {
               {formatPrice(deal.normalPrice)}
             </span>
           )}
-          <span className="font-display text-base font-bold text-neon-400">
+          <span className="font-display text-base font-bold text-accent-400">
             {formatPrice(deal.salePrice)}
           </span>
         </div>
@@ -54,14 +54,14 @@ export default function DealCard({ deal }: { deal: LiveDeal }) {
             href={deal.dealUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-neon-500 px-3 py-2 text-xs font-bold text-ink-950 transition hover:bg-neon-400"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent-500 px-3 py-2 text-xs font-bold text-ink-950 transition hover:bg-accent-400"
           >
             Get Deal <ExternalLink size={13} />
           </a>
           {localGame && (
             <Link
               to={`/games/${localGame.slug}`}
-              className="inline-flex items-center justify-center rounded-lg border border-ink-600 px-3 py-2 text-xs font-semibold text-ink-200 transition hover:border-neon-500/50 hover:text-neon-400"
+              className="inline-flex items-center justify-center rounded-xl border border-ink-600 px-3 py-2 text-xs font-semibold text-ink-200 transition hover:border-accent-500/50 hover:text-accent-400"
             >
               Page
             </Link>

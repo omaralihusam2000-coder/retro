@@ -29,6 +29,7 @@ export interface UserLogEntry {
   status?: LogStatus;
   rating?: number;
   review?: string;
+  recommend?: boolean;
   loggedAt: string;
   updatedAt: string;
 }

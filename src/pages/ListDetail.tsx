@@ -21,7 +21,7 @@ export default function ListDetail() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
         <h1 className="font-display text-2xl font-bold text-white">List not found</h1>
-        <Link to="/lists" className="mt-4 inline-block text-neon-400 hover:underline">
+        <Link to="/lists" className="mt-4 inline-block text-accent-400 hover:underline">
           Back to your lists
         </Link>
       </div>
@@ -39,7 +39,7 @@ export default function ListDetail() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neon-500">List</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-500">List</p>
           <h1 className="font-display text-3xl font-bold text-white sm:text-4xl">{list.name}</h1>
           {list.description && <p className="mt-2 max-w-xl text-ink-400">{list.description}</p>}
           <p className="mt-1 text-sm text-ink-500">{list.gameIds.length} games</p>
@@ -47,7 +47,7 @@ export default function ListDetail() {
         <div className="flex gap-2">
           <button
             onClick={() => setAdding((v) => !v)}
-            className="rounded-full bg-neon-500 px-4 py-2 text-sm font-bold text-ink-950 hover:bg-neon-400"
+            className="rounded-full bg-accent-500 px-4 py-2 text-sm font-bold text-ink-950 hover:bg-accent-400"
           >
             {adding ? "Done" : "Add games"}
           </button>
@@ -65,24 +65,24 @@ export default function ListDetail() {
       </div>
 
       {adding && (
-        <div className="mb-8 rounded-xl border border-ink-700 bg-ink-800 p-4">
+        <div className="mb-8 glass rounded-2xl p-4">
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search games to add…"
-            className="mb-3 w-full rounded-lg border border-ink-600 bg-ink-900 px-3 py-2 text-sm text-ink-100 outline-none focus:border-neon-500/50"
+            className="mb-3 w-full rounded-xl border border-ink-600 bg-ink-900 px-3 py-2 text-sm text-ink-100 outline-none focus:border-accent-500/50"
           />
           <div className="scrollbar-thin flex max-h-64 flex-col gap-1 overflow-y-auto">
             {candidates.slice(0, 30).map((g) => (
               <button
                 key={g.id}
                 onClick={() => addToList(list.id, g.id)}
-                className="flex items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-ink-200 hover:bg-ink-700"
+                className="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-ink-200 hover:bg-ink-700"
               >
                 <span>
                   {g.title} <span className="text-ink-500">({g.year})</span>
                 </span>
-                <span className="text-neon-400">+ Add</span>
+                <span className="text-accent-400">+ Add</span>
               </button>
             ))}
             {candidates.length === 0 && (
@@ -93,7 +93,7 @@ export default function ListDetail() {
       )}
 
       {listGames.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-ink-700 py-20 text-center">
+        <div className="rounded-2xl border border-dashed border-ink-700 py-20 text-center">
           <p className="text-ink-400">This list is empty — add some games above.</p>
         </div>
       ) : (

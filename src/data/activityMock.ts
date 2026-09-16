@@ -44,12 +44,29 @@ export const activityFeed: ActivityEntry[] = raw.map((entry, i) => ({
   avatarSeed: entry.username,
 }));
 
-export function avatarGradient(seed: string): string {
+const AVATAR_STYLES: { bg: string; text: string }[] = [
+  { bg: "linear-gradient(135deg, #ffd60a, #e0ab00)", text: "#000000" },
+  { bg: "linear-gradient(135deg, #3a3a3c, #000000)", text: "#ffd60a" },
+  { bg: "linear-gradient(135deg, #ffcc00, #3a3a3c)", text: "#000000" },
+  { bg: "linear-gradient(135deg, #f2f2f7, #8e8e93)", text: "#000000" },
+  { bg: "linear-gradient(135deg, #ffd60a, #1c1c1e)", text: "#000000" },
+  { bg: "linear-gradient(135deg, #636366, #000000)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #ffe680, #cc9d00)", text: "#000000" },
+  { bg: "linear-gradient(135deg, #c7c7cc, #3a3a3c)", text: "#000000" },
+];
+
+function avatarIndex(seed: string): number {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) hash = (hash << 5) - hash + seed.charCodeAt(i);
-  const h1 = Math.abs(hash) % 360;
-  const h2 = (h1 + 55) % 360;
-  return `linear-gradient(135deg, hsl(${h1} 80% 55%), hsl(${h2} 85% 45%))`;
+  return Math.abs(hash) % AVATAR_STYLES.length;
+}
+
+export function avatarGradient(seed: string): string {
+  return AVATAR_STYLES[avatarIndex(seed)].bg;
+}
+
+export function avatarTextColor(seed: string): string {
+  return AVATAR_STYLES[avatarIndex(seed)].text;
 }
 
 export function initials(username: string): string {

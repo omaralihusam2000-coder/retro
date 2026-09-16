@@ -27,7 +27,7 @@ export default function StatusPicker({
             onClick={() => onChange(active ? undefined : key)}
             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
               active
-                ? "border-neon-500 bg-neon-500/15 text-neon-400"
+                ? "border-accent-500 bg-accent-500/15 text-accent-400"
                 : "border-ink-600 text-ink-300 hover:border-ink-400 hover:text-ink-100"
             }`}
           >

@@ -10,7 +10,7 @@ export default function GameCard({ game }: { game: Game }) {
   return (
     <Link
       to={`/games/${game.slug}`}
-      className="card-glow-hover group relative block overflow-hidden rounded-xl border border-ink-700 bg-ink-800"
+      className="card-glow-hover group relative block overflow-hidden rounded-2xl border border-ink-700 bg-ink-800"
     >
       <div className="poster relative overflow-hidden">
         <PosterImage

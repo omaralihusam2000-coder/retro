@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ExternalLink, Star } from "lucide-react";
+import { ExternalLink, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import { getGameBySlug } from "../lib/gamesData";
 import { getDeals } from "../lib/dealsApi";
 import type { LiveDeal, LogStatus, StoreKey } from "../lib/types";
@@ -14,6 +14,7 @@ import StoreBadge from "../components/StoreBadge";
 import StatusPicker from "../components/StatusPicker";
 import AddToListMenu from "../components/AddToListMenu";
 import Avatar from "../components/Avatar";
+import RecommendBadge from "../components/RecommendBadge";
 import { timeAgo } from "../lib/format";
 
 const STORE_ORDER: StoreKey[] = ["steam", "epic", "gog"];
@@ -35,6 +36,7 @@ export default function GameDetail() {
   const setRating = useUserStore((s) => s.setRating);
   const setStatus = useUserStore((s) => s.setStatus);
   const setReview = useUserStore((s) => s.setReview);
+  const setRecommend = useUserStore((s) => s.setRecommend);
   const addRecentlyViewed = useUserStore((s) => s.addRecentlyViewed);
   const [reviewDraft, setReviewDraft] = useState(entry?.review ?? "");
   const pushToast = useToastStore((s) => s.push);
@@ -66,7 +68,7 @@ export default function GameDetail() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
         <h1 className="font-display text-2xl font-bold text-white">Game not found</h1>
-        <Link to="/games" className="mt-4 inline-block text-neon-400 hover:underline">
+        <Link to="/games" className="mt-4 inline-block text-accent-400 hover:underline">
           Back to browse
         </Link>
       </div>
@@ -93,7 +95,7 @@ export default function GameDetail() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
         <div className="-mt-24 flex flex-col gap-6 sm:-mt-32 sm:flex-row sm:gap-8">
-          <div className="poster w-36 shrink-0 overflow-hidden rounded-xl border-2 border-ink-700 shadow-2xl sm:w-52">
+          <div className="poster w-36 shrink-0 overflow-hidden rounded-2xl border-2 border-ink-700 shadow-2xl sm:w-52">
             <PosterImage src={game.cover} title={game.title} />
           </div>
           <div className="flex-1 pb-4 pt-2 sm:pt-20">
@@ -106,7 +108,7 @@ export default function GameDetail() {
                 <Link
                   key={g}
                   to={`/genres/${encodeURIComponent(g)}`}
-                  className="rounded-full bg-ink-800 px-2.5 py-1 text-xs font-medium text-ink-300 transition hover:bg-ink-700 hover:text-neon-400"
+                  className="rounded-full bg-ink-800 px-2.5 py-1 text-xs font-medium text-ink-300 transition hover:bg-ink-700 hover:text-accent-400"
                 >
                   {g}
                 </Link>
@@ -124,7 +126,7 @@ export default function GameDetail() {
           <div>
             <p className="max-w-2xl text-base leading-relaxed text-ink-200">{game.description}</p>
 
-            <div className="mt-8 rounded-xl border border-ink-800 bg-ink-900/40 p-5">
+            <div className="mt-8 glass rounded-2xl p-5">
               <h2 className="mb-4 font-display text-lg font-bold text-white">Your activity</h2>
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
@@ -157,6 +159,43 @@ export default function GameDetail() {
               </div>
               <div className="mt-5">
                 <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-400">
+                  Would you recommend this?
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = entry?.recommend === true ? undefined : true;
+                      setRecommend(game.id, next);
+                      pushToast(next ? "Marked as recommended" : "Recommendation cleared");
+                    }}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                      entry?.recommend === true
+                        ? "border-accent-500 bg-accent-500/15 text-accent-400"
+                        : "border-ink-600 text-ink-300 hover:border-ink-400 hover:text-ink-100"
+                    }`}
+                  >
+                    <ThumbsUp size={14} /> Recommended
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = entry?.recommend === false ? undefined : false;
+                      setRecommend(game.id, next);
+                      pushToast(next === false ? "Marked as not recommended" : "Recommendation cleared");
+                    }}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                      entry?.recommend === false
+                        ? "border-ink-300 bg-white/10 text-white"
+                        : "border-ink-600 text-ink-300 hover:border-ink-400 hover:text-ink-100"
+                    }`}
+                  >
+                    <ThumbsDown size={14} /> Not recommended
+                  </button>
+                </div>
+              </div>
+              <div className="mt-5">
+                <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-400">
                   Your review
                 </p>
                 <textarea
@@ -164,12 +203,12 @@ export default function GameDetail() {
                   onChange={(e) => setReviewDraft(e.target.value)}
                   placeholder="What did you think?"
                   rows={3}
-                  className="w-full rounded-lg border border-ink-700 bg-ink-900 p-3 text-sm text-ink-100 outline-none focus:border-neon-500/50"
+                  className="w-full rounded-xl border border-ink-700 bg-ink-900 p-3 text-sm text-ink-100 outline-none focus:border-accent-500/50"
                 />
                 <div className="mt-2 flex items-center gap-3">
                   <button
                     onClick={handleSaveReview}
-                    className="rounded-full bg-neon-500 px-4 py-1.5 text-sm font-bold text-ink-950 transition hover:bg-neon-400"
+                    className="rounded-full bg-accent-500 px-4 py-1.5 text-sm font-bold text-ink-950 transition hover:bg-accent-400"
                   >
                     Save review
                   </button>
@@ -187,9 +226,10 @@ export default function GameDetail() {
                     <div className="flex items-start gap-3">
                       <Avatar seed="you" />
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className="font-semibold text-ink-100">You</span>
                           {entry.rating ? <StarRating value={entry.rating} readOnly size={13} /> : null}
+                          <RecommendBadge recommend={entry.recommend} />
                         </div>
                         <p className="mt-1.5 text-sm leading-relaxed text-ink-300">
                           {entry.review}
@@ -206,6 +246,7 @@ export default function GameDetail() {
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-semibold text-ink-100">{r.username}</span>
                           <StarRating value={r.rating} readOnly size={13} />
+                          <RecommendBadge recommend={r.recommend} />
                         </div>
                         <p className="mt-1.5 text-sm leading-relaxed text-ink-300">{r.text}</p>
                         <p className="mt-1 text-xs text-ink-500">{timeAgo(r.timestamp)}</p>
@@ -222,7 +263,7 @@ export default function GameDetail() {
             </div>
           </div>
 
-          <aside className="h-fit rounded-xl border border-ink-800 bg-ink-900/40 p-5">
+          <aside className="h-fit glass rounded-2xl p-5">
             <h2 className="mb-4 font-display text-lg font-bold text-white">Where to buy</h2>
             <div className="flex flex-col gap-3">
               {STORE_ORDER.filter((key) => game.stores[key]).map((key) => {
@@ -234,7 +275,7 @@ export default function GameDetail() {
                     href={live?.dealUrl ?? link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="card-glow-hover flex items-center justify-between rounded-lg border border-ink-700 bg-ink-800 p-3.5"
+                    className="card-glow-hover glass flex items-center justify-between rounded-xl p-3.5"
                   >
                     <div>
                       <StoreBadge store={key} />
@@ -245,11 +286,11 @@ export default function GameDetail() {
                               {formatPrice(live.normalPrice)}
                             </span>
                           )}
-                          <span className="font-display text-base font-bold text-neon-400">
+                          <span className="font-display text-base font-bold text-accent-400">
                             {formatPrice(live.salePrice)}
                           </span>
                           {live.savingsPct > 0 && (
-                            <span className="rounded-full bg-neon-500/15 px-1.5 py-0.5 text-[10px] font-bold text-neon-400">
+                            <span className="rounded-full bg-accent-500/15 px-1.5 py-0.5 text-[10px] font-bold text-accent-400">
                               -{live.savingsPct}%
                             </span>
                           )}

@@ -9,11 +9,14 @@ interface UserState {
   logs: Record<string, UserLogEntry>;
   lists: GameList[];
   recentlyViewed: string[];
+  interestedUpcoming: string[];
   setDisplayName: (name: string) => void;
   addRecentlyViewed: (gameId: string) => void;
+  toggleInterestedUpcoming: (id: string) => void;
   setStatus: (gameId: string, status: LogStatus | undefined) => void;
   setRating: (gameId: string, rating: number | undefined) => void;
   setReview: (gameId: string, review: string) => void;
+  setRecommend: (gameId: string, recommend: boolean | undefined) => void;
   clearLog: (gameId: string) => void;
   createList: (name: string, description: string) => string;
   deleteList: (listId: string) => void;
@@ -40,6 +43,7 @@ export const useUserStore = create<UserState>()(
       logs: {},
       lists: [],
       recentlyViewed: [],
+      interestedUpcoming: [],
 
       setDisplayName: (name) => set({ displayName: name }),
 
@@ -49,6 +53,13 @@ export const useUserStore = create<UserState>()(
             0,
             12,
           ),
+        })),
+
+      toggleInterestedUpcoming: (id) =>
+        set((state) => ({
+          interestedUpcoming: state.interestedUpcoming.includes(id)
+            ? state.interestedUpcoming.filter((x) => x !== id)
+            : [...state.interestedUpcoming, id],
         })),
 
       setStatus: (gameId, status) =>
@@ -81,6 +92,13 @@ export const useUserStore = create<UserState>()(
         set((state) => {
           const current = ensureEntry(state.logs, gameId);
           const next: UserLogEntry = { ...current, review, updatedAt: new Date().toISOString() };
+          return { logs: { ...state.logs, [gameId]: next } };
+        }),
+
+      setRecommend: (gameId, recommend) =>
+        set((state) => {
+          const current = ensureEntry(state.logs, gameId);
+          const next: UserLogEntry = { ...current, recommend, updatedAt: new Date().toISOString() };
           return { logs: { ...state.logs, [gameId]: next } };
         }),
 

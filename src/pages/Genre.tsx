@@ -12,7 +12,7 @@ export default function Genre() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
         <h1 className="font-display text-2xl font-bold text-white">Genre not found</h1>
-        <Link to="/games" className="mt-4 inline-block text-neon-400 hover:underline">
+        <Link to="/games" className="mt-4 inline-block text-accent-400 hover:underline">
           Back to browse
         </Link>
       </div>
@@ -23,11 +23,11 @@ export default function Genre() {
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <Link
         to="/games"
-        className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-ink-400 hover:text-neon-400"
+        className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-ink-400 hover:text-accent-400"
       >
         <ArrowLeft size={14} /> All games
       </Link>
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neon-500">Genre</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-500">Genre</p>
       <h1 className="font-display text-3xl font-bold text-white sm:text-4xl">{matched}</h1>
       <p className="mt-2 text-sm text-ink-400">{list.length} games</p>
 
@@ -38,7 +38,7 @@ export default function Genre() {
             to={`/genres/${encodeURIComponent(g)}`}
             className={`rounded-full px-3 py-1.5 text-sm font-semibold transition ${
               g === matched
-                ? "bg-neon-500 text-ink-950"
+                ? "bg-accent-500 text-ink-950"
                 : "bg-ink-800 text-ink-300 hover:bg-ink-700"
             }`}
           >

@@ -19,7 +19,7 @@ export default function ToastViewport() {
             onClick={() => dismiss(toast.id)}
             className="pointer-events-auto flex items-center gap-2 rounded-full border border-ink-600 bg-ink-800/95 px-4 py-2.5 text-sm font-semibold text-ink-100 shadow-xl backdrop-blur"
           >
-            <CheckCircle2 size={16} className="shrink-0 text-neon-400" />
+            <CheckCircle2 size={16} className="shrink-0 text-accent-400" />
             {toast.message}
           </motion.div>
         ))}

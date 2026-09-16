@@ -7,6 +7,7 @@ import { useUserStore } from "../lib/store";
 
 const LINKS = [
   { to: "/games", label: "Games" },
+  { to: "/upcoming", label: "Upcoming" },
   { to: "/deals", label: "Deals" },
   { to: "/activity", label: "Activity" },
   { to: "/lists", label: "Lists" },
@@ -26,7 +27,7 @@ export default function NavBar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink-800 bg-ink-950/85 backdrop-blur-md">
+    <header className="glass sticky top-0 z-50">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
         <Link to="/" className="shrink-0">
           <Logo />
@@ -38,9 +39,9 @@ export default function NavBar() {
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `rounded-md px-3 py-2 font-display text-sm font-semibold transition ${
+                `rounded-lg px-3 py-2 font-display text-sm font-semibold transition ${
                   isActive
-                    ? "text-neon-400"
+                    ? "text-accent-400"
                     : "text-ink-300 hover:text-ink-100"
                 }`
               }
@@ -60,14 +61,14 @@ export default function NavBar() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search games…"
-              className="w-full rounded-full border border-ink-700 bg-ink-800 py-2 pl-9 pr-3 text-sm text-ink-100 outline-none transition placeholder:text-ink-400 focus:border-neon-500/50 focus:ring-2 focus:ring-neon-500/20"
+              className="w-full rounded-full border border-ink-700 bg-ink-800 py-2 pl-9 pr-3 text-sm text-ink-100 outline-none transition placeholder:text-ink-400 focus:border-accent-500/50 focus:ring-2 focus:ring-accent-500/20"
             />
           </div>
         </form>
 
         <Link
           to="/deals"
-          className="hidden shrink-0 items-center gap-1.5 rounded-full bg-neon-500/10 px-3 py-1.5 text-xs font-bold text-neon-400 ring-1 ring-neon-500/30 transition hover:bg-neon-500/20 sm:inline-flex"
+          className="hidden shrink-0 items-center gap-1.5 rounded-full bg-accent-500/10 px-3 py-1.5 text-xs font-bold text-accent-400 ring-1 ring-accent-500/30 transition hover:bg-accent-500/20 sm:inline-flex"
         >
           <Tag size={13} /> Live Deals
         </Link>
@@ -79,7 +80,7 @@ export default function NavBar() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="ml-auto rounded-md p-2 text-ink-200 md:hidden"
+          className="ml-auto rounded-lg p-2 text-ink-200 md:hidden"
           aria-label="Toggle menu"
         >
           {open ? <X size={22} /> : <Menu size={22} />}
@@ -109,8 +110,8 @@ export default function NavBar() {
                 to={link.to}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
-                  `rounded-md px-3 py-2 font-display text-sm font-semibold ${
-                    isActive ? "bg-ink-800 text-neon-400" : "text-ink-300"
+                  `rounded-lg px-3 py-2 font-display text-sm font-semibold ${
+                    isActive ? "bg-ink-800 text-accent-400" : "text-ink-300"
                   }`
                 }
               >
@@ -120,7 +121,7 @@ export default function NavBar() {
             <NavLink
               to="/profile"
               onClick={() => setOpen(false)}
-              className="rounded-md px-3 py-2 font-display text-sm font-semibold text-ink-300"
+              className="rounded-lg px-3 py-2 font-display text-sm font-semibold text-ink-300"
             >
               Profile
             </NavLink>

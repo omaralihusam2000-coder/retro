@@ -21,11 +21,11 @@ export default function Search() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neon-500">Search</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-500">Search</p>
       <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">
         {q ? (
           <>
-            Results for <span className="text-neon-400">&ldquo;{q}&rdquo;</span>
+            Results for <span className="text-accent-400">&ldquo;{q}&rdquo;</span>
           </>
         ) : (
           "Search Retro"
@@ -41,7 +41,7 @@ export default function Search() {
         </div>
       ) : (
         q && (
-          <div className="mt-16 rounded-xl border border-dashed border-ink-700 py-16 text-center text-ink-400">
+          <div className="mt-16 rounded-2xl border border-dashed border-ink-700 py-16 text-center text-ink-400">
             No games matched that search.
           </div>
         )

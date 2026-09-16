@@ -17,7 +17,7 @@ export default function SectionHeader({
     <div className="mb-4 flex items-end justify-between gap-4">
       <div>
         {eyebrow && (
-          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-neon-500">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-accent-500">
             {eyebrow}
           </p>
         )}
@@ -26,7 +26,7 @@ export default function SectionHeader({
       {action && (
         <Link
           to={action}
-          className="inline-flex shrink-0 items-center gap-0.5 text-sm font-semibold text-ink-300 transition hover:text-neon-400"
+          className="inline-flex shrink-0 items-center gap-0.5 text-sm font-semibold text-ink-300 transition hover:text-accent-400"
         >
           {actionLabel} <ChevronRight size={16} />
         </Link>

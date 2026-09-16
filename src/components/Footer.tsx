@@ -17,24 +17,24 @@ export default function Footer() {
             <div>
               <p className="mb-2 font-display font-semibold text-ink-200">Browse</p>
               <ul className="space-y-1.5 text-ink-400">
-                <li><Link to="/games" className="hover:text-neon-400">All Games</Link></li>
-                <li><Link to="/deals" className="hover:text-neon-400">Live Deals</Link></li>
-                <li><Link to="/activity" className="hover:text-neon-400">Activity</Link></li>
+                <li><Link to="/games" className="hover:text-accent-400">All Games</Link></li>
+                <li><Link to="/deals" className="hover:text-accent-400">Live Deals</Link></li>
+                <li><Link to="/activity" className="hover:text-accent-400">Activity</Link></li>
               </ul>
             </div>
             <div>
               <p className="mb-2 font-display font-semibold text-ink-200">You</p>
               <ul className="space-y-1.5 text-ink-400">
-                <li><Link to="/profile" className="hover:text-neon-400">Profile</Link></li>
-                <li><Link to="/lists" className="hover:text-neon-400">Your Lists</Link></li>
+                <li><Link to="/profile" className="hover:text-accent-400">Profile</Link></li>
+                <li><Link to="/lists" className="hover:text-accent-400">Your Lists</Link></li>
               </ul>
             </div>
             <div>
               <p className="mb-2 font-display font-semibold text-ink-200">Stores</p>
               <ul className="space-y-1.5 text-ink-400">
-                <li><a href="https://store.steampowered.com" target="_blank" rel="noopener noreferrer" className="hover:text-neon-400">Steam</a></li>
-                <li><a href="https://store.epicgames.com" target="_blank" rel="noopener noreferrer" className="hover:text-neon-400">Epic Games</a></li>
-                <li><a href="https://www.gog.com" target="_blank" rel="noopener noreferrer" className="hover:text-neon-400">GOG</a></li>
+                <li><a href="https://store.steampowered.com" target="_blank" rel="noopener noreferrer" className="hover:text-accent-400">Steam</a></li>
+                <li><a href="https://store.epicgames.com" target="_blank" rel="noopener noreferrer" className="hover:text-accent-400">Epic Games</a></li>
+                <li><a href="https://www.gog.com" target="_blank" rel="noopener noreferrer" className="hover:text-accent-400">GOG</a></li>
               </ul>
             </div>
           </div>

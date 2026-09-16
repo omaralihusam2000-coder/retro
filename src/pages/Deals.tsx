@@ -67,7 +67,7 @@ export default function Deals() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="mb-8 flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neon-500">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-500">
           Deal Radar
         </p>
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -77,7 +77,7 @@ export default function Deals() {
           <button
             type="button"
             onClick={() => setRefreshKey((k) => k + 1)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-ink-600 px-3 py-1.5 text-xs font-semibold text-ink-200 transition hover:border-neon-500/50 hover:text-neon-400"
+            className="inline-flex items-center gap-1.5 rounded-full border border-ink-600 px-3 py-1.5 text-xs font-semibold text-ink-200 transition hover:border-accent-500/50 hover:text-accent-400"
           >
             <RefreshCw size={13} /> Refresh
           </button>
@@ -87,7 +87,7 @@ export default function Deals() {
           Epic Games Store and GOG listings. Every card links directly to the
           real store page to complete the purchase.{" "}
           {source && (
-            <span className={source === "live" ? "text-neon-400" : "text-amber-400"}>
+            <span className={source === "live" ? "text-accent-400" : "text-amber-400"}>
               {source === "live"
                 ? "Showing live prices right now."
                 : "Live feed unreachable — showing curated sample pricing."}
@@ -104,7 +104,7 @@ export default function Deals() {
               onClick={() => setStore(tab.key)}
               className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
                 store === tab.key
-                  ? "bg-neon-500 text-ink-950"
+                  ? "bg-accent-500 text-ink-950"
                   : "bg-ink-800 text-ink-300 hover:bg-ink-700"
               }`}
             >
@@ -119,13 +119,13 @@ export default function Deals() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Filter by title…"
-              className="w-44 rounded-full border border-ink-700 bg-ink-800 py-2 pl-8 pr-3 text-sm text-ink-100 outline-none focus:border-neon-500/50 sm:w-56"
+              className="w-44 rounded-full border border-ink-700 bg-ink-800 py-2 pl-8 pr-3 text-sm text-ink-100 outline-none focus:border-accent-500/50 sm:w-56"
             />
           </div>
           <select
             value={maxPrice ?? "any"}
             onChange={(e) => setMaxPrice(e.target.value === "any" ? null : Number(e.target.value))}
-            className="rounded-full border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-ink-100 outline-none focus:border-neon-500/50"
+            className="rounded-full border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-ink-100 outline-none focus:border-accent-500/50"
           >
             <option value="any">Any price</option>
             <option value="5">Under $5</option>
@@ -136,7 +136,7 @@ export default function Deals() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="rounded-full border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-ink-100 outline-none focus:border-neon-500/50"
+            className="rounded-full border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-ink-100 outline-none focus:border-accent-500/50"
           >
             <option value="savings">Biggest discount</option>
             <option value="price-asc">Price: low to high</option>

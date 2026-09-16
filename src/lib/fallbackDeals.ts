@@ -42,6 +42,13 @@ const basePrices: BasePrice[] = [
   { gameId: "loophero", price: 14.99, discount: { steam: 50, gog: 40, epic: 40 } },
   { gameId: "subnautica", price: 29.99, discount: { steam: 75, epic: 60 } },
   { gameId: "riskofrain2", price: 24.99, discount: { steam: 60, epic: 50 } },
+  { gameId: "portal", price: 9.99, discount: { steam: 50 } },
+  { gameId: "balatro", price: 14.99, discount: { steam: 20, gog: 15, epic: 20 } },
+  { gameId: "amongus", price: 4.99, discount: { steam: 25, gog: 20, epic: 25 } },
+  { gameId: "superliminal", price: 19.99, discount: { steam: 60, gog: 50, epic: 50 } },
+  { gameId: "stanleyparable", price: 19.99, discount: { steam: 25, gog: 20, epic: 20 } },
+  { gameId: "untitledgoosegame", price: 19.99, discount: { steam: 40, epic: 35 } },
+  { gameId: "edithfinch", price: 19.99, discount: { steam: 60, epic: 50 } },
 ];
 
 const storeNames: Record<StoreKey, string> = {

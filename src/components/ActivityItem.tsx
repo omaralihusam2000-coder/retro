@@ -25,7 +25,7 @@ export default function ActivityItem({ entry }: { entry: ActivityEntry }) {
         <p className="text-sm text-ink-200">
           <span className="font-semibold text-ink-100">{entry.username}</span>{" "}
           {ACTION_TEXT[entry.action]}{" "}
-          <Link to={`/games/${game.slug}`} className="font-semibold text-neon-400 hover:underline">
+          <Link to={`/games/${game.slug}`} className="font-semibold text-accent-400 hover:underline">
             {game.title}
           </Link>
           {entry.action === "listed" && entry.listName && (
@@ -45,7 +45,7 @@ export default function ActivityItem({ entry }: { entry: ActivityEntry }) {
         )}
         <p className="mt-1.5 text-xs text-ink-400">{timeAgo(entry.timestamp)}</p>
       </div>
-      <Link to={`/games/${game.slug}`} className="h-16 w-11 shrink-0 overflow-hidden rounded-md">
+      <Link to={`/games/${game.slug}`} className="h-16 w-11 shrink-0 overflow-hidden rounded-lg">
         <PosterImage src={game.cover} title={game.title} />
       </Link>
     </div>
