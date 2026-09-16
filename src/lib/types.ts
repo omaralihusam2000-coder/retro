@@ -9,9 +9,10 @@ export interface Game {
   id: string;
   slug: string;
   title: string;
-  year: number;
-  developer: string;
-  publisher: string;
+  /** Curated entries always have these; live-catalog entries may not. */
+  year?: number;
+  developer?: string;
+  publisher?: string;
   genres: string[];
   tags: string[];
   description: string;
@@ -20,6 +21,8 @@ export interface Game {
   stores: Partial<Record<StoreKey, StoreLink>>;
   communityRating: number;
   ratingCount: number;
+  /** true for games hydrated from the live catalog rather than hand-curated */
+  isExtended?: boolean;
 }
 
 export type LogStatus = "backlog" | "playing" | "completed" | "wishlist" | "abandoned";

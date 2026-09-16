@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import { useUserStore } from "../lib/store";
 import { useToastStore } from "../lib/toastStore";
-import { games } from "../lib/gamesData";
+import { withExtended } from "../lib/gamesData";
+import { useCatalogStore } from "../lib/catalogStore";
 import GameCard from "../components/GameCard";
 
 export default function ListDetail() {
@@ -14,6 +15,8 @@ export default function ListDetail() {
   const addToList = useUserStore((s) => s.addToList);
   const removeFromList = useUserStore((s) => s.removeFromList);
   const pushToast = useToastStore((s) => s.push);
+  const liveGames = useCatalogStore((s) => s.liveGames);
+  const games = useMemo(() => withExtended(liveGames), [liveGames]);
   const [adding, setAdding] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -80,7 +83,8 @@ export default function ListDetail() {
                 className="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-ink-200 hover:bg-ink-700"
               >
                 <span>
-                  {g.title} <span className="text-ink-500">({g.year})</span>
+                  {g.title}
+                  {g.year && <span className="text-ink-500"> ({g.year})</span>}
                 </span>
                 <span className="text-accent-400">+ Add</span>
               </button>

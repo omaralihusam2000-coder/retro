@@ -29,7 +29,7 @@ export default function GameCard({ game }: { game: Game }) {
           <p className="font-display text-sm font-semibold text-white line-clamp-2">
             {game.title}
           </p>
-          <p className="text-xs text-ink-300">{game.year}</p>
+          {game.year ? <p className="text-xs text-ink-300">{game.year}</p> : null}
         </div>
       </div>
     </Link>

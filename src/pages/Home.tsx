@@ -8,6 +8,7 @@ import { upcomingGames } from "../data/upcomingGames";
 import { getDeals } from "../lib/dealsApi";
 import type { LiveDeal } from "../lib/types";
 import { useUserStore } from "../lib/store";
+import { useCatalogStore } from "../lib/catalogStore";
 import { computeStats } from "../lib/stats";
 import GameCard from "../components/GameCard";
 import DealCard from "../components/DealCard";
@@ -67,6 +68,8 @@ export default function Home() {
   }, []);
 
   const trending = [...games].sort((a, b) => b.communityRating - a.communityRating).slice(0, 12);
+  const liveGamesCount = useCatalogStore((s) => s.liveGames.length);
+  const totalGamesCount = games.length + liveGamesCount;
 
   const logs = useUserStore((s) => s.logs);
   const recentlyViewedIds = useUserStore((s) => s.recentlyViewed);
@@ -115,7 +118,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-ink-300">
-            <Stat value={`${games.length}+`} label="games tracked" />
+            <Stat value={`${totalGamesCount}+`} label="games tracked" />
             <Stat value="3" label="storefronts linked" />
             <Stat value="24/7" label="deal scanning" />
           </div>

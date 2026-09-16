@@ -5892,3 +5892,13 @@ export function getGameById(id: string) {
 }
 
 export const allGenres = Array.from(new Set(games.flatMap((g) => g.genres))).sort();
+
+/** Curated catalog plus whatever the live catalog has hydrated so far. */
+export function withExtended(liveGames: Game[]): Game[] {
+  return liveGames.length ? [...games, ...liveGames] : games;
+}
+
+/** Looks up a game by slug across both the curated and live catalogs. */
+export function findGameBySlugExtended(slug: string, liveGames: Game[]): Game | undefined {
+  return getGameBySlug(slug) ?? liveGames.find((g) => g.slug === slug);
+}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ExternalLink, Star, ThumbsDown, ThumbsUp } from "lucide-react";
-import { getGameBySlug } from "../lib/gamesData";
+import { findGameBySlugExtended } from "../lib/gamesData";
+import { useCatalogStore } from "../lib/catalogStore";
 import { getDeals } from "../lib/dealsApi";
 import type { LiveDeal, LogStatus, StoreKey } from "../lib/types";
 import { formatCompactNumber, formatPrice } from "../lib/format";
@@ -29,7 +30,8 @@ const STATUS_LABEL: Record<LogStatus, string> = {
 
 export default function GameDetail() {
   const { slug } = useParams();
-  const game = slug ? getGameBySlug(slug) : undefined;
+  const liveCatalogGames = useCatalogStore((s) => s.liveGames);
+  const game = slug ? findGameBySlugExtended(slug, liveCatalogGames) : undefined;
   const [liveDeals, setLiveDeals] = useState<LiveDeal[]>([]);
 
   const entry = useUserStore((s) => (game ? s.logs[game.id] : undefined));
@@ -100,9 +102,13 @@ export default function GameDetail() {
           </div>
           <div className="flex-1 pb-4 pt-2 sm:pt-20">
             <h1 className="font-display text-2xl font-bold text-white sm:text-4xl">{game.title}</h1>
-            <p className="mt-1 text-sm text-ink-300 sm:text-base">
-              {game.year} &middot; {game.developer}
-            </p>
+            {(game.year || game.developer) && (
+              <p className="mt-1 text-sm text-ink-300 sm:text-base">
+                {game.year}
+                {game.year && game.developer && <> &middot; </>}
+                {game.developer}
+              </p>
+            )}
             <div className="mt-3 flex flex-wrap gap-1.5">
               {game.genres.map((g) => (
                 <Link
@@ -116,8 +122,14 @@ export default function GameDetail() {
             </div>
             <div className="mt-4 flex items-center gap-2 text-sm text-ink-300">
               <Star size={16} className="fill-amber-400 text-amber-400" />
-              <span className="font-semibold text-ink-100">{game.communityRating.toFixed(1)}</span>
-              <span>average &middot; {formatCompactNumber(game.ratingCount)} ratings</span>
+              {game.ratingCount > 0 ? (
+                <>
+                  <span className="font-semibold text-ink-100">{game.communityRating.toFixed(1)}</span>
+                  <span>average &middot; {formatCompactNumber(game.ratingCount)} ratings</span>
+                </>
+              ) : (
+                <span>No community ratings yet — be the first</span>
+              )}
             </div>
           </div>
         </div>

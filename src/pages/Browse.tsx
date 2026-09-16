@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
-import { allGenres, games } from "../lib/gamesData";
+import { Loader2, Search } from "lucide-react";
+import { allGenres, withExtended } from "../lib/gamesData";
+import { useCatalogStore } from "../lib/catalogStore";
 import GameCard from "../components/GameCard";
 
 type SortKey = "rating" | "year" | "title";
@@ -9,16 +10,20 @@ export default function Browse() {
   const [query, setQuery] = useState("");
   const [genre, setGenre] = useState<string>("all");
   const [sort, setSort] = useState<SortKey>("rating");
+  const liveGames = useCatalogStore((s) => s.liveGames);
+  const catalogStatus = useCatalogStore((s) => s.status);
+
+  const allGames = useMemo(() => withExtended(liveGames), [liveGames]);
 
   const filtered = useMemo(() => {
-    let list = games;
+    let list = allGames;
     if (genre !== "all") list = list.filter((g) => g.genres.includes(genre));
     if (query.trim()) {
       const q = query.trim().toLowerCase();
       list = list.filter(
         (g) =>
           g.title.toLowerCase().includes(q) ||
-          g.developer.toLowerCase().includes(q) ||
+          (g.developer ?? "").toLowerCase().includes(q) ||
           g.tags.some((t) => t.toLowerCase().includes(q)),
       );
     }
@@ -28,14 +33,14 @@ export default function Browse() {
         sorted.sort((a, b) => b.communityRating - a.communityRating);
         break;
       case "year":
-        sorted.sort((a, b) => b.year - a.year);
+        sorted.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
         break;
       case "title":
         sorted.sort((a, b) => a.title.localeCompare(b.title));
         break;
     }
     return sorted;
-  }, [query, genre, sort]);
+  }, [allGames, query, genre, sort]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -83,7 +88,14 @@ export default function Browse() {
         </div>
       </div>
 
-      <p className="mb-4 text-xs text-ink-500">{filtered.length} games</p>
+      <p className="mb-4 flex items-center gap-2 text-xs text-ink-500">
+        {filtered.length} games
+        {catalogStatus === "loading" && (
+          <span className="inline-flex items-center gap-1 text-ink-400">
+            <Loader2 size={11} className="animate-spin" /> pulling in more from the live catalog…
+          </span>
+        )}
+      </p>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {filtered.map((game) => (

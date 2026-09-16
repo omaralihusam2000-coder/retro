@@ -1,23 +1,26 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { games } from "../lib/gamesData";
+import { withExtended } from "../lib/gamesData";
+import { useCatalogStore } from "../lib/catalogStore";
 import GameCard from "../components/GameCard";
 
 export default function Search() {
   const [params] = useSearchParams();
   const q = params.get("q") ?? "";
+  const liveGames = useCatalogStore((s) => s.liveGames);
+  const allGames = useMemo(() => withExtended(liveGames), [liveGames]);
 
   const results = useMemo(() => {
     if (!q.trim()) return [];
     const query = q.trim().toLowerCase();
-    return games.filter(
+    return allGames.filter(
       (g) =>
         g.title.toLowerCase().includes(query) ||
-        g.developer.toLowerCase().includes(query) ||
+        (g.developer ?? "").toLowerCase().includes(query) ||
         g.genres.some((genre) => genre.toLowerCase().includes(query)) ||
         g.tags.some((tag) => tag.toLowerCase().includes(query)),
     );
-  }, [q]);
+  }, [allGames, q]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">

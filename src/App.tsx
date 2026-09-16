@@ -1,5 +1,6 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { useCatalogStore } from "./lib/catalogStore";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import ToastViewport from "./components/ToastViewport";
@@ -25,6 +26,12 @@ function ScrollToTop() {
 }
 
 function App() {
+  const loadCatalog = useCatalogStore((s) => s.load);
+
+  useEffect(() => {
+    loadCatalog();
+  }, [loadCatalog]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <ScrollToTop />
