@@ -20,6 +20,7 @@ export default function Suggest() {
 
   const [searchResults, setSearchResults] = useState<GameSearchResult[]>([]);
   const [searching, setSearching] = useState(false);
+  const [searchAttempted, setSearchAttempted] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const skipNextSearch = useRef(false);
 
@@ -31,15 +32,18 @@ export default function Suggest() {
     if (title.trim().length < 2) {
       setSearchResults([]);
       setSearching(false);
+      setSearchAttempted(false);
       return;
     }
     let cancelled = false;
     setSearching(true);
+    setSearchAttempted(false);
     const timer = setTimeout(() => {
       searchGamesLive(title).then((results) => {
         if (cancelled) return;
         setSearchResults(results);
         setSearching(false);
+        setSearchAttempted(true);
         setDropdownOpen(true);
       });
     }, 350);
@@ -55,6 +59,7 @@ export default function Suggest() {
     if (result.thumb) setCoverUrl(result.thumb);
     setDropdownOpen(false);
     setSearchResults([]);
+    setSearchAttempted(false);
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -144,6 +149,15 @@ export default function Suggest() {
               </div>
             )}
           </div>
+          {searching && (
+            <p className="mt-1.5 text-xs text-ink-500">Searching…</p>
+          )}
+          {!searching && searchAttempted && searchResults.length === 0 && (
+            <p className="mt-1.5 text-xs text-ink-500">
+              No live matches for &ldquo;{title.trim()}&rdquo; — just type the rest of the details
+              in yourself below.
+            </p>
+          )}
         </Field>
 
         <div className="grid gap-5 sm:grid-cols-2">
