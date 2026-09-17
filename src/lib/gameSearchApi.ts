@@ -1,4 +1,5 @@
 import { isRawgConfigured, searchGamesComprehensive } from "./rawgApi";
+import { searchGamesWikipedia } from "./wikipediaApi";
 
 const API_BASE = "https://www.cheapshark.com/api/1.0";
 
@@ -7,7 +8,7 @@ export interface GameSearchResult {
   cover: string;
   year?: number;
   platforms?: string[];
-  source: "rawg" | "steam";
+  source: "rawg" | "wikipedia" | "steam";
 }
 
 interface CheapSharkGame {
@@ -18,9 +19,9 @@ interface CheapSharkGame {
 
 /**
  * Live title search against CheapShark's game index — this only covers
- * games that exist on Steam. Used as a fallback when RAWG isn't configured,
- * or RAWG comes back empty. Fails silently (empty array) on any network
- * error so the caller can fall back to manual entry.
+ * games that exist on Steam. Used as the last-resort fallback. Fails
+ * silently (empty array) on any network error so the caller can fall back
+ * to manual entry.
  */
 async function searchSteamOnly(query: string): Promise<GameSearchResult[]> {
   const trimmed = query.trim();
@@ -47,16 +48,20 @@ async function searchSteamOnly(query: string): Promise<GameSearchResult[]> {
 }
 
 /**
- * Searches the widest catalog available: RAWG (every platform, 1990s
- * consoles through today) when an API key is configured, otherwise
- * CheapShark's Steam-only index. Never throws — an empty array just means
- * "nothing found here, fall back to manual entry".
+ * Searches the widest catalog available, in order:
+ * 1. RAWG (every platform, 1990s consoles through today) — only if a free
+ *    API key is configured (VITE_RAWG_API_KEY).
+ * 2. Wikipedia's public search — no signup needed at all, covers nearly
+ *    every notable game ever released, but no structured platform data.
+ * 3. CheapShark's Steam-only index, as a last resort.
+ * Never throws — an empty array just means "nothing found, fall back to
+ * manual entry".
  */
 export async function searchAnyGame(query: string): Promise<GameSearchResult[]> {
   if (isRawgConfigured) {
-    const results = await searchGamesComprehensive(query);
-    if (results.length > 0) {
-      return results.map((r) => ({
+    const rawg = await searchGamesComprehensive(query);
+    if (rawg.length > 0) {
+      return rawg.map((r) => ({
         title: r.title,
         cover: r.cover,
         year: r.year,
@@ -65,5 +70,17 @@ export async function searchAnyGame(query: string): Promise<GameSearchResult[]> 
       }));
     }
   }
+
+  const wiki = await searchGamesWikipedia(query);
+  if (wiki.length > 0) {
+    return wiki.map((r) => ({
+      title: r.title,
+      cover: r.cover,
+      year: r.year,
+      platforms: r.platforms,
+      source: "wikipedia" as const,
+    }));
+  }
+
   return searchSteamOnly(query);
 }
