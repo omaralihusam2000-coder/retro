@@ -4,6 +4,7 @@ import { useCatalogStore } from "./lib/catalogStore";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import ToastViewport from "./components/ToastViewport";
+import ScanlineOverlay from "./components/ScanlineOverlay";
 import Home from "./pages/Home";
 import Deals from "./pages/Deals";
 import Browse from "./pages/Browse";
@@ -15,6 +16,8 @@ import Lists from "./pages/Lists";
 import ListDetail from "./pages/ListDetail";
 import Activity from "./pages/Activity";
 import Search from "./pages/Search";
+import Suggest from "./pages/Suggest";
+import Suggestions from "./pages/Suggestions";
 import NotFound from "./pages/NotFound";
 
 function ScrollToTop() {
@@ -45,6 +48,8 @@ function App() {
           <Route path="/upcoming" element={<Upcoming />} />
           <Route path="/deals" element={<Deals />} />
           <Route path="/activity" element={<Activity />} />
+          <Route path="/suggest" element={<Suggest />} />
+          <Route path="/suggestions" element={<Suggestions />} />
           <Route path="/lists" element={<Lists />} />
           <Route path="/lists/:id" element={<ListDetail />} />
           <Route path="/profile" element={<Profile />} />
@@ -54,6 +59,7 @@ function App() {
       </main>
       <Footer />
       <ToastViewport />
+      <ScanlineOverlay />
     </div>
   );
 }

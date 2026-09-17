@@ -1,28 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  --font-display: "VT323", "Courier New", monospace;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-pixel: "Press Start 2P", "VT323", monospace;
 
   --color-ink-950: #000000;
-  --color-ink-900: #070707;
-  --color-ink-800: #121214;
-  --color-ink-700: #1c1c1e;
-  --color-ink-600: #2c2c2e;
-  --color-ink-500: #3a3a3c;
-  --color-ink-400: #636366;
-  --color-ink-300: #8e8e93;
-  --color-ink-200: #c7c7cc;
-  --color-ink-100: #f2f2f7;
+  --color-ink-900: #05070a;
+  --color-ink-800: #0d1117;
+  --color-ink-700: #161b22;
+  --color-ink-600: #212830;
+  --color-ink-500: #2d3540;
+  --color-ink-400: #5b6472;
+  --color-ink-300: #8b93a1;
+  --color-ink-200: #c3c9d1;
+  --color-ink-100: #eef1f5;
 
-  --color-accent-600: #e0ab00;
-  --color-accent-500: #ffcc00;
-  --color-accent-400: #ffd60a;
+  /* Neon cyan — primary brand / interactive accent */
+  --color-accent-600: #00b8b0;
+  --color-accent-500: #00f5ff;
+  --color-accent-400: #6df9ff;
 
-  --color-amber-400: #ffd60a;
-  --color-amber-500: #ffcc00;
+  /* Neon magenta — ratings, badges */
+  --color-amber-500: #ff2bd6;
+  --color-amber-400: #ff6fe4;
 
-  --shadow-glow-accent: 0 0 0 1px rgba(255, 204, 0, 0.3), 0 8px 24px rgba(255, 204, 0, 0.18);
+  /* Neon green — success / recommend / played */
+  --color-neon-green-500: #22ff8b;
+  --color-neon-green-400: #6dffb0;
+
+  --color-neon-magenta: #ff2bd6;
+  --color-neon-cyan: #00f5ff;
+  --color-neon-green: #22ff8b;
+
+  --shadow-glow-accent: 0 0 0 1px rgba(0, 245, 255, 0.4), 0 0 18px rgba(0, 245, 255, 0.35), 0 0 42px rgba(0, 245, 255, 0.14);
+  --shadow-glow-magenta: 0 0 0 1px rgba(255, 43, 214, 0.4), 0 0 18px rgba(255, 43, 214, 0.35), 0 0 42px rgba(255, 43, 214, 0.14);
+  --shadow-glow-green: 0 0 0 1px rgba(34, 255, 139, 0.4), 0 0 18px rgba(34, 255, 139, 0.35), 0 0 42px rgba(34, 255, 139, 0.14);
+
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 10px;
+  --radius-3xl: 14px;
 }
 
 @layer base {
@@ -40,14 +58,19 @@
     color: var(--color-ink-100);
     font-family: var(--font-sans);
     min-height: 100vh;
-    background-image: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(255, 204, 0, 0.09), transparent 60%);
+    background-image:
+      linear-gradient(rgba(0, 245, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 245, 255, 0.05) 1px, transparent 1px),
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(0, 245, 255, 0.1), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 110%, rgba(255, 43, 214, 0.08), transparent 60%);
+    background-size: 42px 42px, 42px 42px, auto, auto;
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
   }
 
   ::selection {
@@ -58,28 +81,54 @@
 
 @layer utilities {
   .glass {
-    background-color: rgba(28, 28, 30, 0.55);
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.09);
+    background-color: rgba(9, 12, 17, 0.72);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(0, 245, 255, 0.16);
   }
 
   .glass-strong {
-    background-color: rgba(18, 18, 20, 0.75);
-    backdrop-filter: blur(28px) saturate(160%);
-    -webkit-backdrop-filter: blur(28px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(6, 8, 12, 0.88);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    border: 1px solid rgba(0, 245, 255, 0.2);
   }
 
   .hairline {
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 245, 255, 0.14);
   }
 
   .text-gradient-accent {
-    background-image: linear-gradient(90deg, #fff2b8, var(--color-accent-400));
+    background-image: linear-gradient(90deg, var(--color-neon-cyan), var(--color-neon-magenta));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+
+  .font-pixel {
+    font-family: var(--font-pixel);
+  }
+
+  .neon-text {
+    text-shadow: 0 0 6px currentColor, 0 0 18px currentColor;
+  }
+
+  .pixel-corners {
+    clip-path: polygon(
+      0 8px, 8px 8px, 8px 0,
+      calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px,
+      100% calc(100% - 8px), calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) 100%,
+      8px 100%, 8px calc(100% - 8px), 0 calc(100% - 8px)
+    );
+  }
+
+  .pixel-shadow {
+    box-shadow: 4px 4px 0 0 var(--color-neon-cyan);
+    transition: box-shadow 150ms ease, transform 150ms ease;
+  }
+  .pixel-shadow:hover {
+    box-shadow: 2px 2px 0 0 var(--color-neon-cyan);
+    transform: translate(2px, 2px);
   }
 
   .poster {
@@ -95,8 +144,8 @@
   }
   .card-glow-hover:hover {
     transform: translateY(-3px);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 204, 0, 0.25);
-    border-color: rgba(255, 204, 0, 0.3);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 245, 255, 0.4), 0 0 24px rgba(0, 245, 255, 0.2);
+    border-color: rgba(0, 245, 255, 0.4);
   }
 
   .scrollbar-thin::-webkit-scrollbar {
@@ -117,6 +166,25 @@
   .mask-fade-r {
     mask-image: linear-gradient(to right, black 85%, transparent 100%);
   }
+
+  .input {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-ink-600);
+    background-color: var(--color-ink-900);
+    padding: 0.6rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-ink-100);
+    outline: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .input:focus {
+    border-color: rgba(0, 245, 255, 0.5);
+    box-shadow: 0 0 0 2px rgba(0, 245, 255, 0.15);
+  }
+  .input::placeholder {
+    color: var(--color-ink-400);
+  }
 }
 
 @keyframes pulse-glow {
@@ -133,4 +201,45 @@
 }
 .animate-marquee {
   animation: marquee 28s linear infinite;
+}
+
+/* CRT scanline overlay — toggled by ScanlineToggle, see ScanlineOverlay.tsx */
+.crt-scanlines {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 1px,
+    rgba(0, 0, 0, 0.22) 2px,
+    rgba(0, 0, 0, 0.22) 3px
+  );
+  mix-blend-mode: multiply;
+}
+.crt-scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.6) 100%);
+}
+.crt-scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  animation: crt-flicker 6s infinite;
+  background: rgba(0, 245, 255, 0.02);
+}
+@keyframes crt-flicker {
+  0%, 96%, 100% { opacity: 0; }
+  97% { opacity: 1; }
+  98.5% { opacity: 0; }
+  99% { opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt-scanlines::after {
+    animation: none;
+  }
 }

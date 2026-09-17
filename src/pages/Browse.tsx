@@ -1,14 +1,18 @@
 import { useMemo, useState } from "react";
 import { Loader2, Search } from "lucide-react";
-import { allGenres, withExtended } from "../lib/gamesData";
+import { allGenres, allPlatforms, platformsFor, withExtended } from "../lib/gamesData";
+import { eraForYear } from "../lib/types";
 import { useCatalogStore } from "../lib/catalogStore";
 import GameCard from "../components/GameCard";
 
 type SortKey = "rating" | "year" | "title";
+const ERAS = ["80s", "90s", "2000s", "2010s", "2020s"];
 
 export default function Browse() {
   const [query, setQuery] = useState("");
   const [genre, setGenre] = useState<string>("all");
+  const [platform, setPlatform] = useState<string>("all");
+  const [era, setEra] = useState<string>("all");
   const [sort, setSort] = useState<SortKey>("rating");
   const liveGames = useCatalogStore((s) => s.liveGames);
   const catalogStatus = useCatalogStore((s) => s.status);
@@ -18,6 +22,8 @@ export default function Browse() {
   const filtered = useMemo(() => {
     let list = allGames;
     if (genre !== "all") list = list.filter((g) => g.genres.includes(genre));
+    if (platform !== "all") list = list.filter((g) => platformsFor(g).includes(platform));
+    if (era !== "all") list = list.filter((g) => eraForYear(g.year) === era);
     if (query.trim()) {
       const q = query.trim().toLowerCase();
       list = list.filter(
@@ -40,7 +46,7 @@ export default function Browse() {
         break;
     }
     return sorted;
-  }, [allGames, query, genre, sort]);
+  }, [allGames, query, genre, platform, era, sort]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -73,6 +79,30 @@ export default function Browse() {
             {allGenres.map((g) => (
               <option key={g} value={g}>
                 {g}
+              </option>
+            ))}
+          </select>
+          <select
+            value={platform}
+            onChange={(e) => setPlatform(e.target.value)}
+            className="rounded-full border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-ink-100 outline-none focus:border-accent-500/50"
+          >
+            <option value="all">All platforms</option>
+            {allPlatforms.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+          <select
+            value={era}
+            onChange={(e) => setEra(e.target.value)}
+            className="rounded-full border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-ink-100 outline-none focus:border-accent-500/50"
+          >
+            <option value="all">All eras</option>
+            {ERAS.map((e) => (
+              <option key={e} value={e}>
+                {e}
               </option>
             ))}
           </select>

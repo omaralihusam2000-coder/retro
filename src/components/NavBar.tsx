@@ -3,12 +3,14 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, Search, Tag, X } from "lucide-react";
 import Logo from "./Logo";
 import Avatar from "./Avatar";
+import ScanlineToggle from "./ScanlineToggle";
 import { useUserStore } from "../lib/store";
 
 const LINKS = [
   { to: "/games", label: "Games" },
   { to: "/upcoming", label: "Upcoming" },
   { to: "/deals", label: "Deals" },
+  { to: "/suggestions", label: "Suggestions" },
   { to: "/activity", label: "Activity" },
   { to: "/lists", label: "Lists" },
 ];
@@ -72,6 +74,10 @@ export default function NavBar() {
         >
           <Tag size={13} /> Live Deals
         </Link>
+
+        <div className="hidden shrink-0 md:block">
+          <ScanlineToggle />
+        </div>
 
         <Link to={`/profile`} className="hidden shrink-0 md:block">
           <Avatar seed={handle} size={34} />

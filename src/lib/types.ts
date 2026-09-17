@@ -23,6 +23,23 @@ export interface Game {
   ratingCount: number;
   /** true for games hydrated from the live catalog rather than hand-curated */
   isExtended?: boolean;
+  /** Original release platforms, e.g. "PC", "SNES", "Arcade", "Sega Genesis". */
+  platforms?: string[];
+  /** YouTube watch/embed URL for a trailer or gameplay walkthrough. */
+  trailerUrl?: string;
+  /** Screenshot image URLs for the in-page gallery. */
+  screenshots?: string[];
+  /** Short note on the game's lore/legacy impact, shown above the description. */
+  legacy?: string;
+}
+
+export function eraForYear(year: number | undefined): string | undefined {
+  if (!year) return undefined;
+  if (year < 1990) return "80s";
+  if (year < 2000) return "90s";
+  if (year < 2010) return "2000s";
+  if (year < 2020) return "2010s";
+  return "2020s";
 }
 
 export type LogStatus = "backlog" | "playing" | "completed" | "wishlist" | "abandoned";
@@ -57,6 +74,31 @@ export interface LiveDeal {
   dealUrl: string;
   metacritic?: number;
   steamRatingText?: string;
+}
+
+export interface SuggestionInput {
+  title: string;
+  releaseYear?: number;
+  platform: string;
+  coverUrl?: string;
+  videoUrl?: string;
+  reason: string;
+  submittedBy?: string;
+}
+
+export interface Suggestion extends SuggestionInput {
+  id: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+  votes: number;
+}
+
+export interface GameComment {
+  id: string;
+  gameId: string;
+  authorName: string;
+  body: string;
+  createdAt: string;
 }
 
 export interface ActivityEntry {

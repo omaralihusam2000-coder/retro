@@ -1,14 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ExternalLink, Star, ThumbsDown, ThumbsUp } from "lucide-react";
-import { findGameBySlugExtended } from "../lib/gamesData";
+import { ExternalLink, Gamepad2, MessageSquare, Star, ThumbsDown, ThumbsUp } from "lucide-react";
+import { findGameBySlugExtended, platformsFor } from "../lib/gamesData";
 import { useCatalogStore } from "../lib/catalogStore";
 import { getDeals } from "../lib/dealsApi";
-import type { LiveDeal, LogStatus, StoreKey } from "../lib/types";
+import type { GameComment, LiveDeal, LogStatus, StoreKey } from "../lib/types";
 import { formatCompactNumber, formatPrice } from "../lib/format";
 import { useUserStore } from "../lib/store";
 import { useToastStore } from "../lib/toastStore";
 import { reviewsForGame } from "../data/reviewsMock";
+import {
+  addComment,
+  fetchComments,
+  fetchPlayedCount,
+  hasPlayedLocally,
+  markPlayed,
+  unmarkPlayed,
+} from "../lib/community";
+import { toYouTubeEmbedUrl } from "../lib/youtube";
 import PosterImage from "../components/PosterImage";
 import StarRating from "../components/StarRating";
 import StoreBadge from "../components/StoreBadge";
@@ -43,9 +52,58 @@ export default function GameDetail() {
   const [reviewDraft, setReviewDraft] = useState(entry?.review ?? "");
   const pushToast = useToastStore((s) => s.push);
 
+  const [played, setPlayed] = useState(false);
+  const [playedCount, setPlayedCount] = useState<number | null>(null);
+  const [comments, setComments] = useState<GameComment[]>([]);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [commentName, setCommentName] = useState("");
+  const [postingComment, setPostingComment] = useState(false);
+
   useEffect(() => {
     if (game) addRecentlyViewed(game.id);
   }, [game, addRecentlyViewed]);
+
+  useEffect(() => {
+    if (!game) return;
+    setPlayed(hasPlayedLocally(game.id));
+    let cancelled = false;
+    fetchPlayedCount(game.id).then((count) => {
+      if (!cancelled) setPlayedCount(count);
+    });
+    fetchComments(game.id).then((data) => {
+      if (!cancelled) setComments(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [game]);
+
+  async function handleTogglePlayed() {
+    if (!game) return;
+    const next = !played;
+    setPlayed(next);
+    setPlayedCount((c) => (c === null ? c : c + (next ? 1 : -1)));
+    if (next) {
+      await markPlayed(game.id);
+      pushToast("Marked as played!");
+    } else {
+      await unmarkPlayed(game.id);
+    }
+  }
+
+  async function handlePostComment(e: FormEvent) {
+    e.preventDefault();
+    if (!game || !commentDraft.trim()) return;
+    setPostingComment(true);
+    try {
+      const comment = await addComment(game.id, commentDraft.trim(), commentName);
+      setComments((prev) => [comment, ...prev]);
+      setCommentDraft("");
+      pushToast("Comment posted");
+    } finally {
+      setPostingComment(false);
+    }
+  }
 
   useEffect(() => {
     setReviewDraft(entry?.review ?? "");
@@ -110,6 +168,14 @@ export default function GameDetail() {
               </p>
             )}
             <div className="mt-3 flex flex-wrap gap-1.5">
+              {platformsFor(game).map((p) => (
+                <span
+                  key={p}
+                  className="rounded-full bg-neon-green-500/10 px-2.5 py-1 text-xs font-semibold text-neon-green-500"
+                >
+                  {p}
+                </span>
+              ))}
               {game.genres.map((g) => (
                 <Link
                   key={g}
@@ -131,12 +197,68 @@ export default function GameDetail() {
                 <span>No community ratings yet — be the first</span>
               )}
             </div>
+            <button
+              type="button"
+              onClick={handleTogglePlayed}
+              className={`pixel-shadow mt-4 inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-display text-base font-bold transition ${
+                played
+                  ? "border-neon-green-500 bg-neon-green-500/15 text-neon-green-500"
+                  : "border-ink-600 text-ink-300 hover:border-neon-green-500/50 hover:text-neon-green-500"
+              }`}
+            >
+              <Gamepad2 size={16} /> {played ? "Played it!" : "Mark as played"}
+              {playedCount !== null && (
+                <span className="text-xs font-normal text-ink-400">
+                  · {formatCompactNumber(playedCount)} played
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
         <div className="mt-8 grid gap-10 pb-16 lg:grid-cols-[1fr_360px]">
           <div>
+            {game.legacy && (
+              <div className="mb-5 rounded-2xl border border-neon-green-500/20 bg-neon-green-500/5 p-4">
+                <p className="font-pixel mb-2 text-[10px] uppercase tracking-[0.2em] text-neon-green-500">
+                  Legacy &amp; impact
+                </p>
+                <p className="text-sm leading-relaxed text-ink-200">{game.legacy}</p>
+              </div>
+            )}
+
             <p className="max-w-2xl text-base leading-relaxed text-ink-200">{game.description}</p>
+
+            {game.trailerUrl && toYouTubeEmbedUrl(game.trailerUrl) && (
+              <div className="mt-8">
+                <h2 className="mb-3 font-display text-lg font-bold text-white">Trailer</h2>
+                <div className="backdrop-16-9 overflow-hidden rounded-2xl border border-ink-700">
+                  <iframe
+                    src={toYouTubeEmbedUrl(game.trailerUrl)!}
+                    title={`${game.title} trailer`}
+                    className="h-full w-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
+
+            {game.screenshots && game.screenshots.length > 0 && (
+              <div className="mt-8">
+                <h2 className="mb-3 font-display text-lg font-bold text-white">Screenshots</h2>
+                <div className="scrollbar-thin -mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
+                  {game.screenshots.map((src, i) => (
+                    <img
+                      key={src}
+                      src={src}
+                      alt={`${game.title} screenshot ${i + 1}`}
+                      className="h-32 w-56 shrink-0 rounded-lg border border-ink-700 object-cover sm:h-40 sm:w-72"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-8 glass rounded-2xl p-5">
               <h2 className="mb-4 font-display text-lg font-bold text-white">Your activity</h2>
@@ -270,6 +392,51 @@ export default function GameDetail() {
                   <p className="py-6 text-sm text-ink-400">
                     No reviews yet — be the first to log your thoughts above.
                   </p>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-10">
+              <h2 className="mb-4 flex items-center gap-2 font-display text-lg font-bold text-white">
+                <MessageSquare size={18} className="text-accent-400" /> Nostalgia corner (
+                {comments.length})
+              </h2>
+              <form onSubmit={handlePostComment} className="glass mb-4 flex flex-col gap-2 rounded-2xl p-4">
+                <textarea
+                  value={commentDraft}
+                  onChange={(e) => setCommentDraft(e.target.value)}
+                  placeholder="Got a memory of this one? Drop it here…"
+                  rows={2}
+                  className="input resize-none"
+                />
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    value={commentName}
+                    onChange={(e) => setCommentName(e.target.value)}
+                    placeholder="Your name (optional)"
+                    className="input flex-1 sm:max-w-[200px]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={postingComment || !commentDraft.trim()}
+                    className="ml-auto rounded-lg bg-accent-500 px-4 py-2 text-sm font-bold text-ink-950 transition hover:bg-accent-400 disabled:opacity-60"
+                  >
+                    Post
+                  </button>
+                </div>
+              </form>
+              <div className="flex flex-col divide-y divide-ink-800">
+                {comments.map((c) => (
+                  <div key={c.id} className="py-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-ink-100">{c.authorName}</span>
+                      <span className="text-xs text-ink-500">{timeAgo(c.createdAt)}</span>
+                    </div>
+                    <p className="mt-1 text-sm leading-relaxed text-ink-300">{c.body}</p>
+                  </div>
+                ))}
+                {comments.length === 0 && (
+                  <p className="py-4 text-sm text-ink-400">No comments yet — share a memory above.</p>
                 )}
               </div>
             </div>

@@ -1,4 +1,5 @@
 import type { Game } from "./types";
+import { retroMeta } from "../data/retroMeta";
 
 function steamCover(appId: number) {
   return `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/library_600x900.jpg`;
@@ -16,7 +17,7 @@ function gogUrl(slug: string) {
   return `https://www.gog.com/en/game/${slug}`;
 }
 
-export const games: Game[] = [
+const rawGames: Game[] = [
   {
     id: "hl2",
     slug: "half-life-2",
@@ -5883,6 +5884,10 @@ export const games: Game[] = [
   },
 ];
 
+export const games: Game[] = rawGames.map((g) =>
+  retroMeta[g.id] ? { ...g, ...retroMeta[g.id] } : g,
+);
+
 export function getGameBySlug(slug: string) {
   return games.find((g) => g.slug === slug);
 }
@@ -5892,6 +5897,14 @@ export function getGameById(id: string) {
 }
 
 export const allGenres = Array.from(new Set(games.flatMap((g) => g.genres))).sort();
+
+/** Every catalog entry is originally a PC storefront release; genuine console
+ *  history is layered in via retroMeta.ts for the games we can verify it for. */
+export function platformsFor(game: Game): string[] {
+  return game.platforms && game.platforms.length ? game.platforms : ["PC"];
+}
+
+export const allPlatforms = Array.from(new Set(games.flatMap((g) => platformsFor(g)))).sort();
 
 /** Curated catalog plus whatever the live catalog has hydrated so far. */
 export function withExtended(liveGames: Game[]): Game[] {

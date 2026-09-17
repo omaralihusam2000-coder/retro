@@ -17,7 +17,7 @@ export default function SectionHeader({
     <div className="mb-4 flex items-end justify-between gap-4">
       <div>
         {eyebrow && (
-          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-accent-500">
+          <p className="font-pixel mb-2 text-[10px] uppercase tracking-[0.2em] text-accent-500 neon-text">
             {eyebrow}
           </p>
         )}

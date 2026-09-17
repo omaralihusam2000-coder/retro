@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
 import type { Game } from "../lib/types";
+import { platformsFor } from "../lib/gamesData";
 import PosterImage from "./PosterImage";
 import { useUserStore } from "../lib/store";
 
 export default function GameCard({ game }: { game: Game }) {
   const userRating = useUserStore((s) => s.logs[game.id]?.rating);
+  const platform = platformsFor(game)[0];
 
   return (
     <Link
@@ -29,7 +31,11 @@ export default function GameCard({ game }: { game: Game }) {
           <p className="font-display text-sm font-semibold text-white line-clamp-2">
             {game.title}
           </p>
-          {game.year ? <p className="text-xs text-ink-300">{game.year}</p> : null}
+          <p className="flex items-center gap-1.5 text-xs text-ink-300">
+            {game.year}
+            {game.year && " · "}
+            <span className="text-neon-green-500">{platform}</span>
+          </p>
         </div>
       </div>
     </Link>
