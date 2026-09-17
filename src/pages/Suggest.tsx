@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Loader2, Search } from "lucide-react";
 import { submitSuggestion } from "../lib/community";
-import { searchGamesLive, type GameSearchResult } from "../lib/gameSearchApi";
+import { searchAnyGame, type GameSearchResult } from "../lib/gameSearchApi";
 import { useToastStore } from "../lib/toastStore";
 
 export default function Suggest() {
@@ -39,7 +39,7 @@ export default function Suggest() {
     setSearching(true);
     setSearchAttempted(false);
     const timer = setTimeout(() => {
-      searchGamesLive(title).then((results) => {
+      searchAnyGame(title).then((results) => {
         if (cancelled) return;
         setSearchResults(results);
         setSearching(false);
@@ -56,7 +56,11 @@ export default function Suggest() {
   function handlePickResult(result: GameSearchResult) {
     skipNextSearch.current = true;
     setTitle(result.title);
-    if (result.thumb) setCoverUrl(result.thumb);
+    if (result.cover) setCoverUrl(result.cover);
+    if (result.year) setReleaseYear(String(result.year));
+    if (result.platforms && result.platforms.length > 0) {
+      setPlatform(result.platforms.slice(0, 3).join(", "));
+    }
     setDropdownOpen(false);
     setSearchResults([]);
     setSearchAttempted(false);
@@ -101,7 +105,7 @@ export default function Suggest() {
         <Field
           label="Game title"
           required
-          hint="Start typing — we'll search Steam's catalog and fill in the cover for you. Can't find it there? Just keep typing and fill the rest in yourself."
+          hint="Start typing — we'll search and fill in the year, platform and cover for you. Can't find it? Just keep typing and fill the rest in yourself."
         >
           <div className="relative">
             <div className="relative">
@@ -129,21 +133,24 @@ export default function Suggest() {
             </div>
             {dropdownOpen && searchResults.length > 0 && (
               <div className="scrollbar-thin glass-strong absolute z-20 mt-1.5 max-h-72 w-full overflow-y-auto rounded-lg">
-                {searchResults.map((r) => (
+                {searchResults.map((r, i) => (
                   <button
-                    key={`${r.title}-${r.steamAppID}`}
+                    key={`${r.title}-${i}`}
                     type="button"
                     onMouseDown={() => handlePickResult(r)}
                     className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-ink-200 hover:bg-ink-700"
                   >
-                    {r.thumb ? (
-                      <img src={r.thumb} alt="" className="h-8 w-14 shrink-0 rounded object-cover" />
+                    {r.cover ? (
+                      <img src={r.cover} alt="" className="h-8 w-14 shrink-0 rounded object-cover" />
                     ) : (
                       <span className="flex h-8 w-14 shrink-0 items-center justify-center rounded bg-ink-800 text-ink-600">
                         <Gamepad2 size={14} />
                       </span>
                     )}
-                    <span className="line-clamp-1">{r.title}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-1 block">{r.title}</span>
+                      {r.year && <span className="text-xs text-ink-500">{r.year}</span>}
+                    </span>
                   </button>
                 ))}
               </div>
