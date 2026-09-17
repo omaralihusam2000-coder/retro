@@ -5,6 +5,7 @@ import { useUserStore } from "../lib/store";
 import { useToastStore } from "../lib/toastStore";
 import { withExtended } from "../lib/gamesData";
 import { useCatalogStore } from "../lib/catalogStore";
+import { useCustomGamesStore } from "../lib/customGamesStore";
 import GameCard from "../components/GameCard";
 
 export default function ListDetail() {
@@ -16,7 +17,8 @@ export default function ListDetail() {
   const removeFromList = useUserStore((s) => s.removeFromList);
   const pushToast = useToastStore((s) => s.push);
   const liveGames = useCatalogStore((s) => s.liveGames);
-  const games = useMemo(() => withExtended(liveGames), [liveGames]);
+  const customGames = useCustomGamesStore((s) => s.customGames);
+  const games = useMemo(() => withExtended(liveGames, customGames), [liveGames, customGames]);
   const [adding, setAdding] = useState(false);
   const [query, setQuery] = useState("");
 

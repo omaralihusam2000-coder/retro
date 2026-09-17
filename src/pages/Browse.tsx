@@ -1,14 +1,17 @@
 import { useMemo, useState } from "react";
-import { Loader2, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Loader2, Plus, Search } from "lucide-react";
 import { allGenres, allPlatforms, platformsFor, withExtended } from "../lib/gamesData";
 import { eraForYear } from "../lib/types";
 import { useCatalogStore } from "../lib/catalogStore";
+import { useCustomGamesStore } from "../lib/customGamesStore";
 import GameCard from "../components/GameCard";
 
 type SortKey = "rating" | "year" | "title";
 const ERAS = ["80s", "90s", "2000s", "2010s", "2020s"];
 
 export default function Browse() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [genre, setGenre] = useState<string>("all");
   const [platform, setPlatform] = useState<string>("all");
@@ -16,8 +19,10 @@ export default function Browse() {
   const [sort, setSort] = useState<SortKey>("rating");
   const liveGames = useCatalogStore((s) => s.liveGames);
   const catalogStatus = useCatalogStore((s) => s.status);
+  const customGames = useCustomGamesStore((s) => s.customGames);
+  const addCustomGame = useCustomGamesStore((s) => s.addCustomGame);
 
-  const allGames = useMemo(() => withExtended(liveGames), [liveGames]);
+  const allGames = useMemo(() => withExtended(liveGames, customGames), [liveGames, customGames]);
 
   const filtered = useMemo(() => {
     let list = allGames;
@@ -47,6 +52,11 @@ export default function Browse() {
     }
     return sorted;
   }, [allGames, query, genre, platform, era, sort]);
+
+  function handleAddAndRate() {
+    const game = addCustomGame(query.trim());
+    navigate(`/games/${game.slug}`);
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -127,11 +137,24 @@ export default function Browse() {
         )}
       </p>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-        {filtered.map((game) => (
-          <GameCard key={game.id} game={game} />
-        ))}
-      </div>
+      {filtered.length === 0 && query.trim() ? (
+        <div className="rounded-2xl border border-dashed border-ink-700 py-16 text-center">
+          <p className="text-ink-400">No games matched &ldquo;{query.trim()}&rdquo;.</p>
+          <button
+            type="button"
+            onClick={handleAddAndRate}
+            className="pixel-shadow mt-4 inline-flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2.5 font-display text-base font-bold text-ink-950 transition hover:bg-accent-400"
+          >
+            <Plus size={16} /> Add &ldquo;{query.trim()}&rdquo; and rate it
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {filtered.map((game) => (
+            <GameCard key={game.id} game={game} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

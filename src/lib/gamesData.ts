@@ -318,6 +318,82 @@ const rawGames: Game[] = [
     ratingCount: 198400,
   },
   {
+    id: "gtavicecity",
+    slug: "grand-theft-auto-vice-city",
+    title: "Grand Theft Auto: Vice City",
+    year: 2002,
+    developer: "Rockstar North",
+    publisher: "Rockstar Games",
+    genres: ["Open World", "Action", "Crime"],
+    tags: ["Classic", "80s", "Cult Classic"],
+    description:
+      "A neon-soaked, 80s Miami crime saga that turned the GTA series into a cultural phenomenon and defined a decade of open-world design.",
+    cover: steamCover(12120),
+    backdrop: steamBackdrop(12120),
+    stores: {
+      steam: { url: steamUrl(12120) },
+    },
+    communityRating: 4.6,
+    ratingCount: 87200,
+  },
+  {
+    id: "gtasanandreas",
+    slug: "grand-theft-auto-san-andreas",
+    title: "Grand Theft Auto: San Andreas",
+    year: 2004,
+    developer: "Rockstar North",
+    publisher: "Rockstar Games",
+    genres: ["Open World", "Action", "Crime"],
+    tags: ["Classic", "90s", "Cult Classic"],
+    description:
+      "CJ's sprawling return to San Andreas remains one of the biggest open worlds of its generation, packed with side content that's still being discovered.",
+    cover: steamCover(12110),
+    backdrop: steamBackdrop(12110),
+    stores: {
+      steam: { url: steamUrl(12110) },
+    },
+    communityRating: 4.6,
+    ratingCount: 94500,
+  },
+  {
+    id: "gta3",
+    slug: "grand-theft-auto-iii",
+    title: "Grand Theft Auto III",
+    year: 2001,
+    developer: "DMA Design",
+    publisher: "Rockstar Games",
+    genres: ["Open World", "Action", "Crime"],
+    tags: ["Classic", "Cult Classic"],
+    description:
+      "The game that moved GTA into full 3D and effectively invented the modern open-world genre as we know it.",
+    cover: steamCover(12100),
+    backdrop: steamBackdrop(12100),
+    stores: {
+      steam: { url: steamUrl(12100) },
+    },
+    communityRating: 4.3,
+    ratingCount: 41800,
+  },
+  {
+    id: "gta4",
+    slug: "grand-theft-auto-iv",
+    title: "Grand Theft Auto IV",
+    year: 2008,
+    developer: "Rockstar North",
+    publisher: "Rockstar Games",
+    genres: ["Open World", "Action", "Crime"],
+    tags: ["Story Rich", "Classic"],
+    description:
+      "Niko Bellic's immigrant story grounded the series in a darker, more grounded Liberty City, trading San Andreas' excess for tone and weight.",
+    cover: steamCover(12210),
+    backdrop: steamBackdrop(12210),
+    stores: {
+      steam: { url: steamUrl(12210) },
+    },
+    communityRating: 4.2,
+    ratingCount: 52300,
+  },
+  {
     id: "doometernal",
     slug: "doom-eternal",
     title: "DOOM Eternal",
@@ -5906,12 +5982,21 @@ export function platformsFor(game: Game): string[] {
 
 export const allPlatforms = Array.from(new Set(games.flatMap((g) => platformsFor(g)))).sort();
 
-/** Curated catalog plus whatever the live catalog has hydrated so far. */
-export function withExtended(liveGames: Game[]): Game[] {
-  return liveGames.length ? [...games, ...liveGames] : games;
+/** Curated catalog plus whatever the live catalog has hydrated, plus any
+ *  games a visitor has typed in themselves (see customGamesStore.ts). */
+export function withExtended(liveGames: Game[], customGames: Game[] = []): Game[] {
+  return liveGames.length || customGames.length ? [...games, ...liveGames, ...customGames] : games;
 }
 
-/** Looks up a game by slug across both the curated and live catalogs. */
-export function findGameBySlugExtended(slug: string, liveGames: Game[]): Game | undefined {
-  return getGameBySlug(slug) ?? liveGames.find((g) => g.slug === slug);
+/** Looks up a game by slug across the curated, live and custom catalogs. */
+export function findGameBySlugExtended(
+  slug: string,
+  liveGames: Game[],
+  customGames: Game[] = [],
+): Game | undefined {
+  return (
+    getGameBySlug(slug) ??
+    liveGames.find((g) => g.slug === slug) ??
+    customGames.find((g) => g.slug === slug)
+  );
 }

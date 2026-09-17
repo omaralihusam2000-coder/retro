@@ -18,7 +18,7 @@ export default function PosterImage({
 }) {
   const [failed, setFailed] = useState(false);
 
-  if (failed) {
+  if (failed || !src) {
     const hue = hashHue(title);
     return (
       <div

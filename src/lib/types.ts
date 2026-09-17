@@ -23,6 +23,8 @@ export interface Game {
   ratingCount: number;
   /** true for games hydrated from the live catalog rather than hand-curated */
   isExtended?: boolean;
+  /** true for games a visitor typed in themselves — not curated or live-fetched */
+  isCustom?: boolean;
   /** Original release platforms, e.g. "PC", "SNES", "Arcade", "Sega Genesis". */
   platforms?: string[];
   /** YouTube watch/embed URL for a trailer or gameplay walkthrough. */

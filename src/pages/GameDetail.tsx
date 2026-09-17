@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { ExternalLink, Gamepad2, MessageSquare, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import { findGameBySlugExtended, platformsFor } from "../lib/gamesData";
 import { useCatalogStore } from "../lib/catalogStore";
+import { useCustomGamesStore } from "../lib/customGamesStore";
 import { getDeals } from "../lib/dealsApi";
 import type { GameComment, LiveDeal, LogStatus, StoreKey } from "../lib/types";
 import { formatCompactNumber, formatPrice } from "../lib/format";
@@ -40,7 +41,8 @@ const STATUS_LABEL: Record<LogStatus, string> = {
 export default function GameDetail() {
   const { slug } = useParams();
   const liveCatalogGames = useCatalogStore((s) => s.liveGames);
-  const game = slug ? findGameBySlugExtended(slug, liveCatalogGames) : undefined;
+  const customGames = useCustomGamesStore((s) => s.customGames);
+  const game = slug ? findGameBySlugExtended(slug, liveCatalogGames, customGames) : undefined;
   const [liveDeals, setLiveDeals] = useState<LiveDeal[]>([]);
 
   const entry = useUserStore((s) => (game ? s.logs[game.id] : undefined));
