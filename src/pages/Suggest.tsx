@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Gamepad2, Loader2 } from "lucide-react";
+import { Gamepad2, Loader2, Search } from "lucide-react";
 import { submitSuggestion } from "../lib/community";
+import { searchGamesLive, type GameSearchResult } from "../lib/gameSearchApi";
 import { useToastStore } from "../lib/toastStore";
 
 export default function Suggest() {
@@ -16,6 +17,45 @@ export default function Suggest() {
   const [videoUrl, setVideoUrl] = useState("");
   const [reason, setReason] = useState("");
   const [submittedBy, setSubmittedBy] = useState("");
+
+  const [searchResults, setSearchResults] = useState<GameSearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const skipNextSearch = useRef(false);
+
+  useEffect(() => {
+    if (skipNextSearch.current) {
+      skipNextSearch.current = false;
+      return;
+    }
+    if (title.trim().length < 2) {
+      setSearchResults([]);
+      setSearching(false);
+      return;
+    }
+    let cancelled = false;
+    setSearching(true);
+    const timer = setTimeout(() => {
+      searchGamesLive(title).then((results) => {
+        if (cancelled) return;
+        setSearchResults(results);
+        setSearching(false);
+        setDropdownOpen(true);
+      });
+    }, 350);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [title]);
+
+  function handlePickResult(result: GameSearchResult) {
+    skipNextSearch.current = true;
+    setTitle(result.title);
+    if (result.thumb) setCoverUrl(result.thumb);
+    setDropdownOpen(false);
+    setSearchResults([]);
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -53,14 +93,57 @@ export default function Suggest() {
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 glass flex flex-col gap-5 rounded-2xl p-5 sm:p-6">
-        <Field label="Game title" required>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            placeholder="e.g. Panzer Dragoon Saga"
-            className="input"
-          />
+        <Field
+          label="Game title"
+          required
+          hint="Start typing — we'll search Steam's catalog and fill in the cover for you. Can't find it there? Just keep typing and fill the rest in yourself."
+        >
+          <div className="relative">
+            <div className="relative">
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onFocus={() => searchResults.length > 0 && setDropdownOpen(true)}
+                onBlur={() => setTimeout(() => setDropdownOpen(false), 150)}
+                required
+                autoComplete="off"
+                placeholder="e.g. Panzer Dragoon Saga"
+                className="input pr-9"
+              />
+              {searching ? (
+                <Loader2
+                  size={15}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-ink-400"
+                />
+              ) : (
+                <Search
+                  size={15}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-500"
+                />
+              )}
+            </div>
+            {dropdownOpen && searchResults.length > 0 && (
+              <div className="scrollbar-thin glass-strong absolute z-20 mt-1.5 max-h-72 w-full overflow-y-auto rounded-lg">
+                {searchResults.map((r) => (
+                  <button
+                    key={`${r.title}-${r.steamAppID}`}
+                    type="button"
+                    onMouseDown={() => handlePickResult(r)}
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-ink-200 hover:bg-ink-700"
+                  >
+                    {r.thumb ? (
+                      <img src={r.thumb} alt="" className="h-8 w-14 shrink-0 rounded object-cover" />
+                    ) : (
+                      <span className="flex h-8 w-14 shrink-0 items-center justify-center rounded bg-ink-800 text-ink-600">
+                        <Gamepad2 size={14} />
+                      </span>
+                    )}
+                    <span className="line-clamp-1">{r.title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </Field>
 
         <div className="grid gap-5 sm:grid-cols-2">
@@ -86,7 +169,7 @@ export default function Suggest() {
           </Field>
         </div>
 
-        <Field label="Cover image URL" hint="Paste a link to box art or a title screen.">
+        <Field label="Cover image URL" hint="Auto-filled when you pick a search result, or paste your own link.">
           <input
             type="url"
             value={coverUrl}
