@@ -24,11 +24,28 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Fetch a short-lived IGDB access token
+        id: igdb_token
+        run: |
+          if [ -n "${{ secrets.IGDB_CLIENT_ID }}" ] && [ -n "${{ secrets.IGDB_CLIENT_SECRET }}" ]; then
+            TOKEN=$(curl -sf -X POST "https://id.twitch.tv/oauth2/token" \
+              -d "client_id=${{ secrets.IGDB_CLIENT_ID }}" \
+              -d "client_secret=${{ secrets.IGDB_CLIENT_SECRET }}" \
+              -d "grant_type=client_credentials" | jq -r '.access_token // empty')
+            if [ -n "$TOKEN" ]; then echo "::add-mask::$TOKEN"; fi
+            echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+          else
+            echo "token=" >> "$GITHUB_OUTPUT"
+          fi
+        # Only the resulting access token (not the Twitch client secret)
+        # gets passed to the build below — it's what ends up in the bundle.
       - run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_RAWG_API_KEY: ${{ secrets.VITE_RAWG_API_KEY }}
+          VITE_IGDB_CLIENT_ID: ${{ secrets.IGDB_CLIENT_ID }}
+          VITE_IGDB_ACCESS_TOKEN: ${{ steps.igdb_token.outputs.token }}
       - uses: actions/configure-pages@v5
         with:
           enablement: true

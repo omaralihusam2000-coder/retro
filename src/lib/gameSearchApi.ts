@@ -1,3 +1,4 @@
+import { isIgdbConfigured, searchGamesIgdb } from "./igdbApi";
 import { isRawgConfigured, searchGamesComprehensive } from "./rawgApi";
 import { searchGamesWikipedia } from "./wikipediaApi";
 
@@ -8,7 +9,7 @@ export interface GameSearchResult {
   cover: string;
   year?: number;
   platforms?: string[];
-  source: "rawg" | "wikipedia" | "steam";
+  source: "igdb" | "rawg" | "wikipedia" | "steam";
 }
 
 interface CheapSharkGame {
@@ -49,15 +50,31 @@ async function searchSteamOnly(query: string): Promise<GameSearchResult[]> {
 
 /**
  * Searches the widest catalog available, in order:
- * 1. RAWG (every platform, 1990s consoles through today) — only if a free
- *    API key is configured (VITE_RAWG_API_KEY).
- * 2. Wikipedia's public search — no signup needed at all, covers nearly
+ * 1. IGDB — best-curated, most complete database, if configured
+ *    (VITE_IGDB_CLIENT_ID + VITE_IGDB_ACCESS_TOKEN — see igdbApi.ts for why
+ *    the access token, not the Twitch client secret, is what's embedded).
+ * 2. RAWG — every platform, 1990s consoles through today, if a free API
+ *    key is configured (VITE_RAWG_API_KEY).
+ * 3. Wikipedia's public search — no signup needed at all, covers nearly
  *    every notable game ever released, but no structured platform data.
- * 3. CheapShark's Steam-only index, as a last resort.
+ * 4. CheapShark's Steam-only index, as a last resort.
  * Never throws — an empty array just means "nothing found, fall back to
  * manual entry".
  */
 export async function searchAnyGame(query: string): Promise<GameSearchResult[]> {
+  if (isIgdbConfigured) {
+    const igdb = await searchGamesIgdb(query);
+    if (igdb.length > 0) {
+      return igdb.map((r) => ({
+        title: r.title,
+        cover: r.cover,
+        year: r.year,
+        platforms: r.platforms,
+        source: "igdb" as const,
+      }));
+    }
+  }
+
   if (isRawgConfigured) {
     const rawg = await searchGamesComprehensive(query);
     if (rawg.length > 0) {
