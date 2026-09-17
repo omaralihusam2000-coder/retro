@@ -5,12 +5,17 @@ import type { GameList, LogStatus, UserLogEntry } from "./types";
 interface UserState {
   displayName: string;
   handle: string;
+  bio: string;
   joinedAt: string;
   logs: Record<string, UserLogEntry>;
   lists: GameList[];
+  favorites: string[];
   recentlyViewed: string[];
   interestedUpcoming: string[];
   setDisplayName: (name: string) => void;
+  setHandle: (handle: string) => void;
+  setBio: (bio: string) => void;
+  toggleFavorite: (gameId: string) => void;
   addRecentlyViewed: (gameId: string) => void;
   toggleInterestedUpcoming: (id: string) => void;
   setStatus: (gameId: string, status: LogStatus | undefined) => void;
@@ -39,13 +44,24 @@ export const useUserStore = create<UserState>()(
     (set) => ({
       displayName: "You",
       handle: "you",
+      bio: "Player and collector, tracking my library one game at a time.",
       joinedAt: new Date().toISOString(),
       logs: {},
       lists: [],
+      favorites: [],
       recentlyViewed: [],
       interestedUpcoming: [],
 
       setDisplayName: (name) => set({ displayName: name }),
+      setHandle: (handle) => set({ handle }),
+      setBio: (bio) => set({ bio }),
+
+      toggleFavorite: (gameId) =>
+        set((state) => ({
+          favorites: state.favorites.includes(gameId)
+            ? state.favorites.filter((id) => id !== gameId)
+            : [...state.favorites, gameId],
+        })),
 
       addRecentlyViewed: (gameId) =>
         set((state) => ({

@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ExternalLink, Gamepad2, MessageSquare, Star, ThumbsDown, ThumbsUp } from "lucide-react";
+import { ExternalLink, Gamepad2, Heart, MessageSquare, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import { findGameBySlugExtended, platformsFor } from "../lib/gamesData";
 import { useCatalogStore } from "../lib/catalogStore";
 import { useCustomGamesStore } from "../lib/customGamesStore";
@@ -51,6 +51,9 @@ export default function GameDetail() {
   const setReview = useUserStore((s) => s.setReview);
   const setRecommend = useUserStore((s) => s.setRecommend);
   const addRecentlyViewed = useUserStore((s) => s.addRecentlyViewed);
+  const favorites = useUserStore((s) => s.favorites);
+  const toggleFavorite = useUserStore((s) => s.toggleFavorite);
+  const isFavorite = game ? favorites.includes(game.id) : false;
   const [reviewDraft, setReviewDraft] = useState(entry?.review ?? "");
   const pushToast = useToastStore((s) => s.push);
 
@@ -279,7 +282,25 @@ export default function GameDetail() {
                     showValue
                   />
                 </div>
-                <AddToListMenu gameId={game.id} />
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      toggleFavorite(game.id);
+                      pushToast(isFavorite ? "Removed from favorites" : "Added to favorites");
+                    }}
+                    aria-pressed={isFavorite}
+                    title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                    className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition ${
+                      isFavorite
+                        ? "border-neon-magenta bg-neon-magenta/15 text-neon-magenta"
+                        : "border-ink-600 text-ink-300 hover:border-neon-magenta/50 hover:text-neon-magenta"
+                    }`}
+                  >
+                    <Heart size={16} className={isFavorite ? "fill-current" : ""} />
+                  </button>
+                  <AddToListMenu gameId={game.id} />
+                </div>
               </div>
               <div className="mt-5">
                 <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-400">
