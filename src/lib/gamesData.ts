@@ -6000,3 +6000,23 @@ export function findGameBySlugExtended(
     customGames.find((g) => g.slug === slug)
   );
 }
+
+/** Ranks other games by shared genres/tags with `game`, breaking ties by
+ *  community rating. No external data — pure overlap scoring against
+ *  whatever catalog is passed in. */
+export function similarGames(game: Game, pool: Game[], limit = 6): Game[] {
+  const genreSet = new Set(game.genres);
+  const tagSet = new Set(game.tags);
+
+  return pool
+    .filter((g) => g.id !== game.id)
+    .map((g) => {
+      const sharedGenres = g.genres.filter((genre) => genreSet.has(genre)).length;
+      const sharedTags = g.tags.filter((tag) => tagSet.has(tag)).length;
+      return { game: g, score: sharedGenres * 2 + sharedTags };
+    })
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score || b.game.communityRating - a.game.communityRating)
+    .slice(0, limit)
+    .map((entry) => entry.game);
+}

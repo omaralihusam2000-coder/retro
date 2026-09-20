@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ExternalLink, Gamepad2, Heart, MessageSquare, Star, ThumbsDown, ThumbsUp } from "lucide-react";
-import { findGameBySlugExtended, platformsFor } from "../lib/gamesData";
+import { findGameBySlugExtended, platformsFor, similarGames, withExtended } from "../lib/gamesData";
 import { useCatalogStore } from "../lib/catalogStore";
 import { useCustomGamesStore } from "../lib/customGamesStore";
 import { getDeals } from "../lib/dealsApi";
@@ -20,6 +20,7 @@ import {
 } from "../lib/community";
 import { toYouTubeEmbedUrl } from "../lib/youtube";
 import PosterImage from "../components/PosterImage";
+import GameCard from "../components/GameCard";
 import StarRating from "../components/StarRating";
 import StoreBadge from "../components/StoreBadge";
 import StatusPicker from "../components/StatusPicker";
@@ -43,6 +44,8 @@ export default function GameDetail() {
   const liveCatalogGames = useCatalogStore((s) => s.liveGames);
   const customGames = useCustomGamesStore((s) => s.customGames);
   const game = slug ? findGameBySlugExtended(slug, liveCatalogGames, customGames) : undefined;
+  const catalogForSimilar = withExtended(liveCatalogGames, customGames);
+  const similar = game ? similarGames(game, catalogForSimilar) : [];
   const [liveDeals, setLiveDeals] = useState<LiveDeal[]>([]);
 
   const entry = useUserStore((s) => (game ? s.logs[game.id] : undefined));
@@ -233,6 +236,19 @@ export default function GameDetail() {
             )}
 
             <p className="max-w-2xl text-base leading-relaxed text-ink-200">{game.description}</p>
+
+            {game.tags.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {game.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-ink-700 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink-400"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {game.trailerUrl && toYouTubeEmbedUrl(game.trailerUrl) && (
               <div className="mt-8">
@@ -515,6 +531,21 @@ export default function GameDetail() {
             </p>
           </aside>
         </div>
+
+        {similar.length > 0 && (
+          <div className="pb-16">
+            <h2 className="mb-4 font-display text-lg font-bold text-white">
+              Similar games
+            </h2>
+            <div className="scrollbar-thin -mx-1 flex gap-4 overflow-x-auto px-1 pb-2">
+              {similar.map((g) => (
+                <div key={g.id} className="w-36 shrink-0 sm:w-44">
+                  <GameCard game={g} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

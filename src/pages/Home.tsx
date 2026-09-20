@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Calendar, Sparkles, Tag, Users } from "lucide-react";
+import { ArrowRight, ArrowUp, Calendar, Sparkles, Tag, Users } from "lucide-react";
 import { games, getGameById } from "../lib/gamesData";
 import { activityFeed } from "../data/activityMock";
 import { upcomingGames } from "../data/upcomingGames";
 import { getDeals } from "../lib/dealsApi";
-import type { LiveDeal } from "../lib/types";
+import { fetchSuggestions } from "../lib/community";
+import type { LiveDeal, Suggestion } from "../lib/types";
 import { useUserStore } from "../lib/store";
 import { useCatalogStore } from "../lib/catalogStore";
 import { computeStats } from "../lib/stats";
@@ -54,6 +55,7 @@ function HeroBackdrop() {
 export default function Home() {
   const [deals, setDeals] = useState<LiveDeal[] | null>(null);
   const [dealSource, setDealSource] = useState<"live" | "sample" | null>(null);
+  const [topSuggestions, setTopSuggestions] = useState<Suggestion[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,6 +63,16 @@ export default function Home() {
       if (cancelled) return;
       setDeals(res.deals.slice(0, 8));
       setDealSource(res.source);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchSuggestions().then((data) => {
+      if (!cancelled) setTopSuggestions(data.filter((s) => s.votes > 0).slice(0, 3));
     });
     return () => {
       cancelled = true;
@@ -125,16 +137,70 @@ export default function Home() {
         </div>
       </section>
 
+      <div className="overflow-hidden border-b border-ink-800 bg-ink-900/60 py-2">
+        <div className="animate-marquee flex w-max gap-10 whitespace-nowrap">
+          {[...trending, ...trending].map((game, i) => (
+            <span key={`${game.id}-${i}`} className="font-pixel text-[10px] text-accent-400">
+              ▲ HIGH SCORE — {game.title.toUpperCase()} — {(game.communityRating * 20).toFixed(0)}
+              PTS
+            </span>
+          ))}
+        </div>
+      </div>
+
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <SectionHeader eyebrow="Trending" title="Most acclaimed on Retro" action="/games" />
         <div className="scrollbar-thin -mx-1 flex gap-4 overflow-x-auto px-1 pb-2">
-          {trending.map((game) => (
-            <div key={game.id} className="w-36 shrink-0 sm:w-44">
+          {trending.map((game, i) => (
+            <div key={game.id} className="relative w-36 shrink-0 sm:w-44">
+              <span
+                className={`font-pixel absolute -left-1 -top-1 z-10 rounded-md px-1.5 py-0.5 text-[10px] shadow-glow-accent ${
+                  i === 0
+                    ? "bg-accent-500 text-ink-950"
+                    : i < 3
+                      ? "bg-neon-magenta text-ink-950"
+                      : "bg-ink-950/90 text-accent-400 shadow-none"
+                }`}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
               <GameCard game={game} />
             </div>
           ))}
         </div>
       </div>
+
+      {topSuggestions.length > 0 && (
+        <div className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+          <SectionHeader
+            eyebrow="Community picks"
+            title="What the community wants added next"
+            action="/suggestions"
+            actionLabel="See all suggestions"
+          />
+          <div className="grid gap-3 sm:grid-cols-3">
+            {topSuggestions.map((s) => (
+              <Link
+                key={s.id}
+                to="/suggestions"
+                className="card-glow-hover glass flex items-center gap-3 rounded-2xl p-4"
+              >
+                <div className="flex shrink-0 flex-col items-center gap-0.5 rounded-lg border border-ink-600 px-2.5 py-1.5 text-accent-400">
+                  <ArrowUp size={14} />
+                  <span className="font-display text-sm font-bold">{s.votes}</span>
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate font-display font-semibold text-white">{s.title}</p>
+                  <p className="truncate text-xs text-ink-400">
+                    {s.platform}
+                    {s.releaseYear && ` · ${s.releaseYear}`}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {recentlyViewed.length > 0 && (
         <div className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
