@@ -97,43 +97,105 @@ export default function Home() {
         .slice(0, 12)
     : [];
 
+  const topTrending = trending[0];
+
   return (
     <div>
-      <section className="relative flex min-h-[560px] items-center overflow-hidden border-b border-ink-800">
+      <section className="relative flex min-h-[620px] items-center overflow-hidden border-b border-ink-800">
         <HeroBackdrop />
-        <div className="relative mx-auto w-full max-w-7xl px-4 py-24 sm:px-6">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent-400">
-            <Sparkles size={13} /> Your backlog, tracked properly
-          </p>
-          <h1 className="max-w-2xl font-display text-4xl font-bold leading-[1.05] text-white sm:text-6xl">
-            Log every game.
-            <br />
-            <span className="text-gradient-accent">Rate it. Hunt the deal.</span>
-          </h1>
-          <p className="mt-5 max-w-lg text-base text-ink-200 sm:text-lg">
-            Retro is the social diary for gamers — rate what you play, build
-            lists, follow the community, and jump straight to the cheapest
-            real listing on Steam, Epic Games or GOG.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/games"
-              className="inline-flex items-center gap-2 rounded-full bg-accent-500 px-6 py-3 font-display text-sm font-bold text-ink-950 shadow-glow-accent transition hover:bg-accent-400"
+
+        {/* Radar/target decoration, arcade-marquee accent */}
+        <div
+          className="pointer-events-none absolute -bottom-24 -left-24 h-[420px] w-[420px] rounded-full opacity-30"
+          style={{ border: "1px solid var(--color-marquee-500)" }}
+          aria-hidden="true"
+        >
+          <div
+            className="absolute inset-8 rounded-full"
+            style={{ border: "1px solid var(--color-marquee-500)" }}
+          />
+          <div
+            className="absolute inset-16 rounded-full"
+            style={{ border: "1px solid var(--color-marquee-500)" }}
+          />
+        </div>
+
+        <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-20 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p
+              className="mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-widest"
+              style={{
+                borderColor: "rgba(255,106,26,0.35)",
+                backgroundColor: "rgba(255,106,26,0.1)",
+                color: "var(--color-marquee-400)",
+              }}
             >
-              Browse Games <ArrowRight size={16} />
-            </Link>
+              <Sparkles size={13} /> Your backlog, tracked properly
+            </p>
+            <h1 className="font-hero max-w-2xl text-5xl leading-[0.95] text-white sm:text-7xl">
+              Log it. Rate it.
+              <br />
+              <span style={{ color: "var(--color-marquee-500)" }}>Hunt the deal.</span>
+            </h1>
+            <p className="mt-5 max-w-lg text-base text-ink-200 sm:text-lg">
+              Retro is the social diary for gamers — rate what you play, build
+              lists, follow the community, and jump straight to the cheapest
+              real listing on Steam, Epic Games or GOG.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                to="/games"
+                className="inline-flex items-center gap-2 rounded-lg px-6 py-3 font-display text-base font-bold text-ink-950 transition"
+                style={{ backgroundColor: "var(--color-marquee-500)" }}
+              >
+                Browse Games <ArrowRight size={16} />
+              </Link>
+              <Link
+                to="/deals"
+                className="glass inline-flex items-center gap-2 rounded-lg px-6 py-3 font-display text-base font-bold text-white transition hover:border-accent-500/50"
+              >
+                <Tag size={16} /> See Live Deals
+              </Link>
+            </div>
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-ink-300">
+              <Stat value={`${totalGamesCount}+`} label="games tracked" />
+              <Stat value="3" label="storefronts linked" />
+              <Stat value="24/7" label="deal scanning" />
+            </div>
+          </div>
+
+          {topTrending && (
             <Link
-              to="/deals"
-              className="glass inline-flex items-center gap-2 rounded-full px-6 py-3 font-display text-sm font-bold text-white transition hover:border-accent-500/50"
+              to={`/games/${topTrending.slug}`}
+              className="glass-strong w-full max-w-xs shrink-0 rounded-2xl p-5 transition hover:border-white/20"
             >
-              <Tag size={16} /> See Live Deals
+              <p
+                className="font-pixel mb-3 text-[10px] uppercase tracking-[0.2em]"
+                style={{ color: "var(--color-marquee-400)" }}
+              >
+                #1 Trending now
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="poster w-16 shrink-0 overflow-hidden rounded-lg border border-ink-600">
+                  <PosterImage src={topTrending.cover} title={topTrending.title} />
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate font-display text-lg font-bold text-white">
+                    {topTrending.title}
+                  </p>
+                  <p className="text-sm text-ink-400">
+                    {topTrending.communityRating.toFixed(1)} average rating
+                  </p>
+                </div>
+              </div>
+              <p
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold text-ink-950"
+                style={{ backgroundColor: "var(--color-marquee-500)" }}
+              >
+                See what's hot <ArrowRight size={14} />
+              </p>
             </Link>
-          </div>
-          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-ink-300">
-            <Stat value={`${totalGamesCount}+`} label="games tracked" />
-            <Stat value="3" label="storefronts linked" />
-            <Stat value="24/7" label="deal scanning" />
-          </div>
+          )}
         </div>
       </section>
 
